@@ -1,6 +1,8 @@
 
 buildscript {
     val compose_version by extra("1.0.0-beta09")
+    val camerax_version by extra("1.1.0-alpha07")
+
     repositories {
         google()
         mavenCentral()

@@ -56,6 +56,19 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.activity:activity-compose:1.3.0-rc02")
+
+    // CameraX core library
+    implementation("androidx.camera:camera-core:${rootProject.extra["camerax_version"]}")
+
+    // CameraX Lifecycle library
+    implementation("androidx.camera:camera-lifecycle:${rootProject.extra["camerax_version"]}")
+
+    // CameraX Camera2 extensions
+    implementation("androidx.camera:camera-camera2:${rootProject.extra["camerax_version"]}")
+
+    // CameraX View class
+    implementation("androidx.camera:camera-view:1.0.0-alpha27")
+
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
