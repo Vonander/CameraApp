@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("kotlin-android-extensions")
 }
 
 android {
@@ -68,6 +69,8 @@ dependencies {
 
     // CameraX View class
     implementation("androidx.camera:camera-view:1.0.0-alpha27")
+
+    implementation ("androidx.compose.material:material-icons-extended:${rootProject.extra["compose_version"]}")
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

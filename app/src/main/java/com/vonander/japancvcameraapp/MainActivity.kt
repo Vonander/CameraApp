@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
             if (granted) {
                 setViewContent()
             } else {
-                showToast("Permission not granted.")
+                showToast("Permissions not granted.")
             }
         }
 
