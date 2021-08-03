@@ -11,7 +11,9 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
 import com.vonander.japancvcameraapp.presentation.components.CameraPreview
+import com.vonander.japancvcameraapp.presentation.ui.camera.CameraViewModel
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import com.vonander.japancvcameraapp.util.REQUIRED_PERMISSIONS
 
@@ -31,10 +33,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setViewContent() {
+        val viewModel = ViewModelProvider(this).get(CameraViewModel::class.java)
+        viewModel.screenOrientation.value = resources.configuration.orientation
+
         setContent {
             JapanCVCameraAppTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    CameraPreview()
+                    CameraPreview(viewModel)
                 }
             }
         }

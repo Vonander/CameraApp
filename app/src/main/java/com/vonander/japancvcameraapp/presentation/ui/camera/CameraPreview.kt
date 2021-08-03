@@ -1,8 +1,8 @@
 package com.vonander.japancvcameraapp.presentation.components
 
 import android.util.Log
-import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -18,10 +18,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.vonander.japancvcameraapp.presentation.ui.camera.CameraViewModel
+import com.vonander.japancvcameraapp.presentation.ui.faceanalyzer.FaceDetectionOverlay
+import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
 import com.vonander.japancvcameraapp.util.TAG
 
 @Composable
-fun CameraPreview() {
+fun CameraPreview(
+    viewModel: CameraViewModel
+) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -29,6 +34,9 @@ fun CameraPreview() {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
+        val faceDetectionOverlay = FaceDetectionOverlay(context)
+        faceDetectionOverlay.setOrientation(viewModel.screenOrientation.value)
 
         AndroidView(
             factory = { ctx ->
@@ -56,6 +64,16 @@ fun CameraPreview() {
                         .requireLensFacing(cameraLens)
                         .build()
 
+
+                    val analysisUseCase = ImageAnalysis.Builder()
+                        .build()
+                        .also {
+                                it.setAnalyzer(executor, FaceAnalyzer(
+                                lifecycle = lifecycleOwner.lifecycle,
+                                overlay = faceDetectionOverlay)
+                                )
+                        }
+
                     try {
                         cameraProvider.unbindAll()
 
@@ -63,23 +81,27 @@ fun CameraPreview() {
                             lifecycleOwner,
                             cameraSelector,
                             preview,
-                            imageCapture
+                            analysisUseCase
                         )
                     } catch(e: Exception) {
                         Log.e(TAG, "CameraPreview Use case binding failed", e)
                     }
 
                 }, executor)
+
                 previewView
             },
+            modifier = Modifier.fillMaxSize()
+        )
+
+        AndroidView(
+            factory = { faceDetectionOverlay },
             modifier = Modifier.fillMaxSize()
         )
 
         CameraPreviewToolbar(modifier = Modifier
             .align(Alignment.BottomCenter)
             .fillMaxWidth()
-            )
+        )
     }
-
-
 }
