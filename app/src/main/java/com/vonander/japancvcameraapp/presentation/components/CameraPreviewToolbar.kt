@@ -8,18 +8,20 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.vonander.japancvcameraapp.navigation.Screen
 
 @Composable
 fun CameraPreviewToolbar(
     modifier: Modifier,
-    onClick: () -> Unit
+    onNavigationToPhotoViewScreen: (String) -> Unit,
+    onTakePhoto: () -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -29,10 +31,14 @@ fun CameraPreviewToolbar(
         Row {
             IconButton(
                 modifier = Modifier.padding(start = 10.dp, top = 30.dp),
-                onClick = {}
+                onClick = {
+                    val route = Screen.PhotoView.route
+                    onNavigationToPhotoViewScreen(route)
+                }
             ) {
-                Icon(Icons.Outlined.SwapHorizontalCircle,
-                    contentDescription = "swap horizontal circle image",
+                Icon(Icons.Outlined.ArrowBack,
+                    contentDescription = "arrow back icon",
+                    tint = Color.White,
                     modifier = Modifier.requiredSize(30.dp)
                 )
             }
@@ -44,11 +50,12 @@ fun CameraPreviewToolbar(
                     .align(Alignment.CenterHorizontally)
                     .requiredSize(100.dp),
                 onClick = {
-                    onClick()
+                    onTakePhoto()
                 }
             ) {
                 Icon(Icons.Outlined.Circle,
-                    contentDescription = "circle image",
+                    contentDescription = "circle icon",
+                    tint = Color.White,
                     modifier = Modifier.requiredSize(40.dp)
                 )
             }

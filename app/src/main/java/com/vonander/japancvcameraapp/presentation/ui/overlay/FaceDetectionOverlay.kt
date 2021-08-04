@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.util.Size
 import android.view.View
 import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceLandmark
 
 class FaceDetectionOverlay @JvmOverloads constructor(
     context: Context,
@@ -27,12 +26,6 @@ class FaceDetectionOverlay @JvmOverloads constructor(
         color = Color.GREEN
         style = Paint.Style.STROKE
         strokeWidth = 5.0f
-    }
-
-    private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.YELLOW
-        style = Paint.Style.FILL
-        strokeWidth = 1.0f
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -64,10 +57,6 @@ class FaceDetectionOverlay @JvmOverloads constructor(
         heightScaleFactor = height.toFloat() / previewHeight
         for (face in faces) {
             drawFaceBorder(face, canvas)
-
-            //not used ATM
-            //drawFaceContour(face,canvas)
-            //drawFaceLandmark(face,canvas)
         }
     }
 
@@ -79,39 +68,6 @@ class FaceDetectionOverlay @JvmOverloads constructor(
         val right = translateX(bounds.right.toFloat()) + padding
         val bottom = translateY(bounds.bottom.toFloat()) + padding
         canvas.drawRect(left, top, right, bottom, paint)
-    }
-
-    private fun drawFaceContour(face: Face, canvas: Canvas) {
-        val contour = face.allContours
-        for (faceContour in contour) {
-            for (point in faceContour.points) {
-                val px = translateX(point.x)
-                val py = translateY(point.y)
-                canvas.drawCircle(px, py, 10.0f, dotPaint)
-            }
-        }
-    }
-
-    private fun drawFaceLandmark(face: Face, canvas: Canvas) {
-        val leftEye = face.getLandmark(FaceLandmark.LEFT_EYE)
-        val rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE)
-        val leftCheek = face.getLandmark(FaceLandmark.LEFT_CHEEK)
-        val rightCheek = face.getLandmark(FaceLandmark.RIGHT_CHEEK)
-        drawFaceLandmark(leftEye,canvas)
-        drawFaceLandmark(rightEye,canvas)
-        drawFaceLandmark(leftCheek,canvas)
-        drawFaceLandmark(rightCheek,canvas)
-    }
-
-    private fun drawFaceLandmark(faceLandmark: FaceLandmark?, canvas: Canvas) {
-        if (faceLandmark == null)
-            return
-        canvas.drawCircle(
-            translateX(faceLandmark.position.x),
-            translateY(faceLandmark.position.y),
-            10.0f,
-            dotPaint
-        )
     }
 
     private fun translateX(x: Float): Float = x * widthScaleFactor

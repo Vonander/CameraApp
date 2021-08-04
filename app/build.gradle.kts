@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-android-extensions")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -43,10 +45,12 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = rootProject.extra["compose_version"] as String
     }
+    packagingOptions {
+        exclude ("META-INF/gradle/incremental.annotation.processors")
+    }
 }
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
@@ -70,6 +74,15 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation ("com.android.support:support-fragment:28.0.0")
     implementation ("com.google.accompanist:accompanist-glide:0.10.0")
+
+    implementation ("com.google.dagger:hilt-android-compiler:${rootProject.extra["hilt_version"]}")
+    implementation ("com.google.dagger:hilt-android:${rootProject.extra["hilt_version"]}")
+    implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    implementation ("androidx.hilt:hilt-navigation:1.0.0")
+    kapt ("com.google.dagger:hilt-compiler:${rootProject.extra["hilt_version"]}")
+    kapt ("androidx.hilt:hilt-compiler:1.0.0")
+
+    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha02")
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

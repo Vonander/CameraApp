@@ -27,7 +27,8 @@ import com.vonander.japancvcameraapp.util.TAG
 
 @Composable
 fun CameraPreview(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    onNavigationToPhotoViewScreen: (String) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -103,10 +104,12 @@ fun CameraPreview(
             modifier = Modifier.fillMaxSize()
         )
 
-        CameraPreviewToolbar(modifier = Modifier
+        CameraPreviewToolbar(
+            modifier = Modifier
             .align(Alignment.BottomCenter)
             .fillMaxWidth(),
-            onClick = {
+            onNavigationToPhotoViewScreen = onNavigationToPhotoViewScreen,
+            onTakePhoto = {
                 takePhoto.takePhoto(imageCapture = imageCapture)
             }
         )

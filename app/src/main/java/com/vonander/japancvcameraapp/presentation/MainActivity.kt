@@ -7,19 +7,25 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.hilt.navigation.HiltViewModelFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.vonander.japancvcameraapp.R
-import com.vonander.japancvcameraapp.presentation.ui.PhotoView
+import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.ui.MainViewModel
-import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
+import com.vonander.japancvcameraapp.presentation.ui.PhotoView
+import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreview
 import com.vonander.japancvcameraapp.util.REQUIRED_PERMISSIONS
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,14 +42,33 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setViewContent() {
-        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.screenOrientation.value = resources.configuration.orientation
-
         setContent {
-            JapanCVCameraAppTheme {
-                Surface(color = MaterialTheme.colors.background) {
-                    //CameraPreview(viewModel)
-                    PhotoView(viewModel)
+            val navController = rememberNavController()
+            NavHost(
+                navController = navController,
+                startDestination = Screen.PhotoView.route
+            ) {
+
+                composable(route = Screen.PhotoView.route) { navBackStackEntry ->
+                    val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
+                    val viewModel: MainViewModel = viewModel("MainViewModel", factory)
+                    PhotoView(
+                        viewModel = viewModel,
+                        onNavigationToCameraPreviewScreen = {
+                            navController.navigate(it)
+                        }
+                    )
+                }
+
+                composable(route = Screen.CameraPreview.route) { navBackStackEntry ->
+                    val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
+                    val viewModel: MainViewModel = viewModel("MainViewModel", factory)
+                    CameraPreview(
+                        viewModel = viewModel,
+                        onNavigationToPhotoViewScreen = {
+                            navController.navigate(it)
+                        }
+                    )
                 }
             }
         }
