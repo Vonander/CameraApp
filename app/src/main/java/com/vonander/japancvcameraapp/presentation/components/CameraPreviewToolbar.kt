@@ -18,7 +18,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CameraPreviewToolbar(
-    modifier: Modifier
+    modifier: Modifier,
+    onClick: () -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -42,7 +43,9 @@ fun CameraPreviewToolbar(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .requiredSize(100.dp),
-                onClick = {}
+                onClick = {
+                    onClick()
+                }
             ) {
                 Icon(Icons.Outlined.Circle,
                     contentDescription = "circle image",

@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraViewModel
 import com.vonander.japancvcameraapp.presentation.ui.faceanalyzer.FaceDetectionOverlay
 import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
@@ -30,6 +31,8 @@ fun CameraPreview(
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+    lateinit var imageCapture: ImageCapture
+    val takePhoto = TakePhoto(context)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -49,7 +52,7 @@ fun CameraPreview(
                         it.setSurfaceProvider(previewView.surfaceProvider)
                     }
 
-                    val imageCapture = ImageCapture.Builder()
+                    imageCapture = ImageCapture.Builder()
                         .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                         .build()
 
@@ -63,7 +66,6 @@ fun CameraPreview(
                     val cameraSelector = CameraSelector.Builder()
                         .requireLensFacing(cameraLens)
                         .build()
-
 
                     val analysisUseCase = ImageAnalysis.Builder()
                         .build()
@@ -81,6 +83,7 @@ fun CameraPreview(
                             lifecycleOwner,
                             cameraSelector,
                             preview,
+                            imageCapture,
                             analysisUseCase
                         )
                     } catch(e: Exception) {
@@ -101,7 +104,11 @@ fun CameraPreview(
 
         CameraPreviewToolbar(modifier = Modifier
             .align(Alignment.BottomCenter)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+            onClick = {
+                takePhoto.takePhoto(imageCapture = imageCapture)
+
+            }
         )
     }
 }

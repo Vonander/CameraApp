@@ -1,5 +1,6 @@
 package com.vonander.japancvcameraapp
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -16,6 +17,7 @@ import com.vonander.japancvcameraapp.presentation.components.CameraPreview
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraViewModel
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import com.vonander.japancvcameraapp.util.REQUIRED_PERMISSIONS
+import java.io.File
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +71,16 @@ class MainActivity : ComponentActivity() {
             message,
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    companion object {
+        fun getOutputDirectory(context: Context): File {
+            val appContext = context.applicationContext
+            val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
+                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
+            return if (mediaDir != null && mediaDir.exists())
+                mediaDir else appContext.filesDir
+        }
     }
 }
 

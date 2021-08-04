@@ -17,10 +17,10 @@ class FaceDetectionOverlay @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ): View(context, attrs, defStyleAttr) {
 
+    private var previewHeight: Int = 0
     private var previewWidth: Int = 0
     private var widthScaleFactor = 1.0f
     private var heightScaleFactor = 1.0f
-    private var previewHeight: Int = 0
     private var orientation = Configuration.ORIENTATION_PORTRAIT
     private var faces = emptyArray<Face>()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
