@@ -1,4 +1,4 @@
-package com.vonander.japancvcameraapp.presentation.components
+package com.vonander.japancvcameraapp.presentation.ui.camera
 
 import android.util.Log
 import androidx.camera.core.CameraSelector
@@ -19,20 +19,21 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.vonander.japancvcameraapp.interactors.TakePhoto
-import com.vonander.japancvcameraapp.presentation.ui.camera.CameraViewModel
-import com.vonander.japancvcameraapp.presentation.ui.faceanalyzer.FaceDetectionOverlay
+import com.vonander.japancvcameraapp.presentation.components.CameraPreviewToolbar
+import com.vonander.japancvcameraapp.presentation.ui.MainViewModel
+import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
 import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
 import com.vonander.japancvcameraapp.util.TAG
 
 @Composable
 fun CameraPreview(
-    viewModel: CameraViewModel
+    viewModel: MainViewModel
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     lateinit var imageCapture: ImageCapture
-    val takePhoto = TakePhoto(context)
+    val takePhoto = TakePhoto(context, viewModel)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -107,7 +108,6 @@ fun CameraPreview(
             .fillMaxWidth(),
             onClick = {
                 takePhoto.takePhoto(imageCapture = imageCapture)
-
             }
         )
     }

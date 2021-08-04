@@ -6,17 +6,18 @@ import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
-import com.google.android.material.internal.ContextUtils.getActivity
-import com.vonander.japancvcameraapp.MainActivity.Companion.getOutputDirectory
+import com.vonander.japancvcameraapp.presentation.MainActivity.Companion.getOutputDirectory
+import com.vonander.japancvcameraapp.presentation.ui.MainViewModel
 import com.vonander.japancvcameraapp.util.TAG
 import java.io.File
-
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TakePhoto(private val context: Context) {
+class TakePhoto(
+    private val context: Context,
+    private val viewModel: MainViewModel
+    ) {
 
     fun takePhoto(imageCapture: ImageCapture?) {
         val imageCapture = imageCapture ?: return
@@ -36,6 +37,7 @@ class TakePhoto(private val context: Context) {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
+                    viewModel.photoUriString.value = photoFile.absolutePath
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)

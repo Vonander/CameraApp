@@ -13,7 +13,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import com.vonander.japancvcameraapp.presentation.ui.faceanalyzer.FaceDetectionOverlay
+import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
 
 class FaceAnalyzer(
     lifecycle: Lifecycle,

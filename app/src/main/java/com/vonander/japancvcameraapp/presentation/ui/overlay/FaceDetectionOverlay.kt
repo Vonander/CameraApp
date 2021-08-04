@@ -1,4 +1,4 @@
-package com.vonander.japancvcameraapp.presentation.ui.faceanalyzer
+package com.vonander.japancvcameraapp.presentation.ui.overlay
 
 import android.content.Context
 import android.content.res.Configuration
