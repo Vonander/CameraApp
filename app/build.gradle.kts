@@ -84,6 +84,10 @@ dependencies {
 
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha02")
 
+    implementation ("androidx.datastore:datastore:${rootProject.extra["datastore_version"]}")
+    implementation ("androidx.datastore:datastore-core:${rootProject.extra["datastore_version"]}")
+    implementation ("androidx.datastore:datastore-preferences:${rootProject.extra["datastore_version"]}")
+
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

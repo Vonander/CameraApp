@@ -14,6 +14,7 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
+import com.vonander.japancvcameraapp.util.TAG
 
 class FaceAnalyzer(
     lifecycle: Lifecycle,
@@ -57,9 +58,5 @@ class FaceAnalyzer(
             .addOnCompleteListener{
                 imageProxy.close()
             }
-    }
-
-    companion object {
-        private const val TAG = "FaceAnalyzer"
     }
 }

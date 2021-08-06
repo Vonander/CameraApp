@@ -17,16 +17,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.vonander.japancvcameraapp.R
+import com.vonander.japancvcameraapp.datastore.PhotoDataStore
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.ui.MainViewModel
 import com.vonander.japancvcameraapp.presentation.ui.PhotoView
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreview
 import com.vonander.japancvcameraapp.util.REQUIRED_PERMISSIONS
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val context = this
+    private var dataStore = PhotoDataStore()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,11 +54,9 @@ class MainActivity : ComponentActivity() {
                 startDestination = Screen.PhotoView.route
             ) {
 
-                composable(route = Screen.PhotoView.route) { navBackStackEntry ->
-                    val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
-                    val viewModel: MainViewModel = viewModel("MainViewModel", factory)
+                composable(route = Screen.PhotoView.route) {
                     PhotoView(
-                        viewModel = viewModel,
+                        photoUri = getLatestStoredPhoto(context),
                         onNavigationToCameraPreviewScreen = {
                             navController.navigate(it)
                         }
@@ -91,6 +94,10 @@ class MainActivity : ComponentActivity() {
                 showToast("Permissions not granted.")
             }
         }
+
+    private fun getLatestStoredPhoto(context: Context): String = runBlocking {
+        return@runBlocking dataStore.getPhotoUriString(context)
+    }
 
     private fun showToast(message: String) {
         Toast.makeText(

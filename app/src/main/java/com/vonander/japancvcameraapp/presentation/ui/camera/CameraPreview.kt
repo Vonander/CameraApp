@@ -32,9 +32,15 @@ fun CameraPreview(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    val takePhoto = TakePhoto(context)
+
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-    lateinit var imageCapture: ImageCapture
-    val takePhoto = TakePhoto(context, viewModel)
+
+    val imageCapture = remember {
+        ImageCapture.Builder()
+        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+        .build()
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -54,10 +60,6 @@ fun CameraPreview(
                         it.setSurfaceProvider(previewView.surfaceProvider)
                     }
 
-                    imageCapture = ImageCapture.Builder()
-                        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                        .build()
-
                     val cameraLens =
                         if (cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
                             CameraSelector.LENS_FACING_FRONT
@@ -72,10 +74,12 @@ fun CameraPreview(
                     val analysisUseCase = ImageAnalysis.Builder()
                         .build()
                         .also {
-                                it.setAnalyzer(executor, FaceAnalyzer(
-                                lifecycle = lifecycleOwner.lifecycle,
-                                overlay = faceDetectionOverlay)
+                            it.setAnalyzer(
+                                executor, FaceAnalyzer(
+                                    lifecycle = lifecycleOwner.lifecycle,
+                                    overlay = faceDetectionOverlay
                                 )
+                            )
                         }
 
                     try {
@@ -88,8 +92,8 @@ fun CameraPreview(
                             imageCapture,
                             analysisUseCase
                         )
-                    } catch(e: Exception) {
-                        Log.e(TAG, "CameraPreview Use case binding failed", e)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "okej CameraPreview Use case binding failed", e)
                     }
 
                 }, executor)
@@ -106,12 +110,14 @@ fun CameraPreview(
 
         CameraPreviewToolbar(
             modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .fillMaxWidth(),
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth(),
             onNavigationToPhotoViewScreen = onNavigationToPhotoViewScreen,
+            //onTakePhoto = { viewModel.onTriggerEvent(event = PhotoEvent.TakePhoto, imageCapture = imageCapture) },
             onTakePhoto = {
-                takePhoto.takePhoto(imageCapture = imageCapture)
+                takePhoto.execute(imageCapture)
             }
         )
+
     }
 }

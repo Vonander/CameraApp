@@ -21,7 +21,7 @@ import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 
 @Composable
 fun PhotoView(
-    viewModel: MainViewModel,
+    photoUri: String,
     onNavigationToCameraPreviewScreen: (String) -> Unit,
 ) {
 
@@ -30,6 +30,7 @@ fun PhotoView(
         Surface(
             color = MaterialTheme.colors.surface
         ) {
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -40,17 +41,17 @@ fun PhotoView(
                 Image(
                     painter = rememberGlidePainter(
                         request =
-                        if (viewModel.photoUriString.value.isBlank()) {
+                        if (photoUri.isNullOrBlank()) {
                             R.drawable.placeholder_image
                         } else {
-                            viewModel.photoUriString.value
+                            photoUri
                         },
                         previewPlaceholder = R.drawable.placeholder_image,
                     ),
                     contentDescription = "photo taken by device camera",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Inside,
                     modifier = Modifier
-                        .requiredSize(300.dp)
+                        .requiredSize(width = 300.dp, height = 400.dp)
                         .padding(6.dp)
                 )
 
@@ -66,7 +67,5 @@ fun PhotoView(
                 }
             }
         }
-
-
     }
 }
