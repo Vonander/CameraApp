@@ -4,6 +4,7 @@ buildscript {
     val camerax_version by extra("1.1.0-alpha07")
     val hilt_version by extra("2.37")
     val datastore_version by extra("1.0.0-rc02")
+    val retrofit_version by extra("2.9.0")
 
     repositories {
         google()

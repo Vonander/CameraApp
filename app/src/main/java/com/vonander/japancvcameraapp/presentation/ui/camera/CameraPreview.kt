@@ -93,7 +93,7 @@ fun CameraPreview(
                             analysisUseCase
                         )
                     } catch (e: Exception) {
-                        Log.e(TAG, "okej CameraPreview Use case binding failed", e)
+                        Log.e(TAG, "CameraPreview Use case binding failed", e)
                     }
 
                 }, executor)

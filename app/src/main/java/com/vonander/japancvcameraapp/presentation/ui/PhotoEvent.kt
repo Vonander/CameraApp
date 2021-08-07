@@ -10,7 +10,7 @@ sealed class PhotoEvent {
         val completion: (String) -> Unit
         ): PhotoEvent()
 
-    data class SendPhoto(
-        val Uri: String
+    data class SearchTags(
+        val uriString: String
         ): PhotoEvent()
 }

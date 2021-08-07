@@ -22,6 +22,7 @@ import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 
 @Composable
 fun PhotoView(
+    viewModel: MainViewModel,
     photoUri: String,
     onNavigationToCameraPreviewScreen: (String) -> Unit,
 ) {
@@ -57,13 +58,30 @@ fun PhotoView(
                         .scale(scaleX = -1f, scaleY = 1f)
                 )
 
+                if(!photoUri.isNullOrBlank()) {
+
+                    Button(
+                        onClick = {
+                            viewModel.onTriggerEvent(
+                                event = PhotoEvent.SearchTags(
+                                    uriString = photoUri
+                                )
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(top = 40.dp)
+                    ) {
+                        Text(text = "Search for tags")
+                    }
+                }
+
                 Button(
                     onClick = {
                         val route = Screen.CameraPreview.route
                         onNavigationToCameraPreviewScreen(route)
                     },
                     modifier = Modifier
-                        .padding(top = 50.dp)
+                        .padding(top = 40.dp)
                 ) {
                     Text(text = "Take Photo")
                 }

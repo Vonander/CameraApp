@@ -1,7 +1,10 @@
 package com.vonander.japancvcameraapp.di
 
 import com.vonander.japancvcameraapp.BaseApplication
+import com.vonander.japancvcameraapp.interactors.SearchTags
 import com.vonander.japancvcameraapp.interactors.TakePhoto
+import com.vonander.japancvcameraapp.network.ImaggaService
+import com.vonander.japancvcameraapp.network.util.TagDtoMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +22,18 @@ object InteractorsModule {
     ): TakePhoto {
         return TakePhoto(
             context = app
+        )
+    }
+
+    @ViewModelScoped
+    @Provides
+    fun provideSearchTag(
+        tagService: ImaggaService,
+        dtoMapper: TagDtoMapper
+    ): SearchTags {
+        return SearchTags(
+            tagService = tagService,
+            dtoMapper = dtoMapper
         )
     }
 }

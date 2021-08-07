@@ -1,9 +1,9 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -87,6 +87,9 @@ dependencies {
     implementation ("androidx.datastore:datastore:${rootProject.extra["datastore_version"]}")
     implementation ("androidx.datastore:datastore-core:${rootProject.extra["datastore_version"]}")
     implementation ("androidx.datastore:datastore-preferences:${rootProject.extra["datastore_version"]}")
+
+    implementation("com.squareup.retrofit2:retrofit:${rootProject.extra["retrofit_version"]}")
+    implementation("com.squareup.retrofit2:converter-gson:${rootProject.extra["retrofit_version"]}")
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

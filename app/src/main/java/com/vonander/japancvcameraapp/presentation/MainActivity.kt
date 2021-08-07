@@ -54,8 +54,11 @@ class MainActivity : ComponentActivity() {
                 startDestination = Screen.PhotoView.route
             ) {
 
-                composable(route = Screen.PhotoView.route) {
+                composable(route = Screen.PhotoView.route) { navBackStackEntry ->
+                    val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
+                    val viewModel: MainViewModel = viewModel("MainViewModel", factory)
                     PhotoView(
+                        viewModel = viewModel,
                         photoUri = getLatestStoredPhoto(context),
                         onNavigationToCameraPreviewScreen = {
                             navController.navigate(it)
