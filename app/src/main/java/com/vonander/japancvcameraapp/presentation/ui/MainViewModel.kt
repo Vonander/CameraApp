@@ -4,11 +4,9 @@ import android.util.Log
 import androidx.camera.core.ImageCapture
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,11 +16,14 @@ class MainViewModel @Inject constructor(
 
     val screenOrientation = mutableStateOf(1)
 
-    fun onTriggerEvent(event: PhotoEvent, imageCapture: ImageCapture) {
+    fun onTriggerEvent(event: PhotoEvent) {
         try {
             when(event) {
                 is PhotoEvent.TakePhoto -> {
-                    takePhoto(imageCapture)
+                    takePhoto(
+                        event.imageCapture,
+                        event.completion
+                    )
                 }
                 is PhotoEvent.SendPhoto -> {
 
@@ -33,11 +34,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun takePhoto(imageCapture: ImageCapture) {
-        imageCapture.let {
-            viewModelScope.launch {
-
-            }
-        }
+    private fun takePhoto(
+        imageCapture: ImageCapture,
+        completion: (String) -> Unit
+    ) {
+        takePhoto.execute(imageCapture, completion)
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.glide.rememberGlidePainter
@@ -53,6 +54,7 @@ fun PhotoView(
                     modifier = Modifier
                         .requiredSize(width = 300.dp, height = 400.dp)
                         .padding(6.dp)
+                        .scale(scaleX = -1f, scaleY = 1f)
                 )
 
                 Button(

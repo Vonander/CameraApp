@@ -18,9 +18,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.vonander.japancvcameraapp.interactors.TakePhoto
+import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.CameraPreviewToolbar
 import com.vonander.japancvcameraapp.presentation.ui.MainViewModel
+import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
 import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
 import com.vonander.japancvcameraapp.util.TAG
@@ -32,7 +33,6 @@ fun CameraPreview(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    val takePhoto = TakePhoto(context)
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
@@ -113,11 +113,17 @@ fun CameraPreview(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
             onNavigationToPhotoViewScreen = onNavigationToPhotoViewScreen,
-            //onTakePhoto = { viewModel.onTriggerEvent(event = PhotoEvent.TakePhoto, imageCapture = imageCapture) },
             onTakePhoto = {
-                takePhoto.execute(imageCapture)
+                viewModel.onTriggerEvent(
+                    event = PhotoEvent.TakePhoto(
+                        imageCapture = imageCapture,
+                        completion = {
+                            val route = Screen.PhotoView.route
+                            onNavigationToPhotoViewScreen(route)
+                        }
+                    )
+                )
             }
         )
-
     }
 }

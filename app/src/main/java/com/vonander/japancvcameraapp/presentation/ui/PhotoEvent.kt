@@ -1,8 +1,16 @@
 package com.vonander.japancvcameraapp.presentation.ui
 
+import androidx.camera.core.ImageCapture
+
 sealed class PhotoEvent {
     object openCamera: PhotoEvent()
-    object TakePhoto: PhotoEvent()
 
-    data class SendPhoto(val Uri: String): PhotoEvent()
+    data class TakePhoto(
+        val imageCapture: ImageCapture,
+        val completion: (String) -> Unit
+        ): PhotoEvent()
+
+    data class SendPhoto(
+        val Uri: String
+        ): PhotoEvent()
 }

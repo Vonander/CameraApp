@@ -20,7 +20,11 @@ import java.util.*
 class TakePhoto(
     private val context: Context
 ) {
-    fun execute(IC: ImageCapture?) {
+    fun execute(
+        IC: ImageCapture?,
+        completion: (String) -> Unit
+    ) {
+
         val imageCapture = IC ?: return
 
         val photoFile = File(
@@ -36,23 +40,26 @@ class TakePhoto(
             outputOptions,
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
+
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
-                    val msg = "Photo capture succeeded: $savedUri"
+                    val msg = "Photo capture succeeded"
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
-
-                    savePhotoToDataStore(savedUri.toString())
+                    Log.d(TAG, "Photo capture succeeded: $savedUri")
+                    savePhotoToDataStore(savedUri.toString(), completion)
                 }
             }
         )
     }
 
-    private fun savePhotoToDataStore(savedUri: String) {
+    private fun savePhotoToDataStore(
+        savedUri: String,
+        completion: (String) -> Unit
+    ) {
         val dataStore = PhotoDataStore()
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -60,6 +67,8 @@ class TakePhoto(
                 context = context,
                 newVaule = savedUri
             )
+
+            completion(savedUri)
         }
     }
 
