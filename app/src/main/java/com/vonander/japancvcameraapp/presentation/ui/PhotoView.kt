@@ -63,15 +63,18 @@ fun PhotoView(
                     Button(
                         onClick = {
                             viewModel.onTriggerEvent(
-                                event = PhotoEvent.SearchTags(
-                                    uriString = photoUri
+                                event = PhotoEvent.UploadPhoto(
+                                    uriString = photoUri,
+                                    completion = {
+                                        println(it)
+                                    }
                                 )
                             )
                         },
                         modifier = Modifier
                             .padding(top = 40.dp)
                     ) {
-                        Text(text = "Search for tags")
+                        Text(text = "Upload photo")
                     }
                 }
 

@@ -7,8 +7,13 @@ sealed class PhotoEvent {
 
     data class TakePhoto(
         val imageCapture: ImageCapture,
-        val completion: (String) -> Unit
+        val completion: () -> Unit
         ): PhotoEvent()
+
+    data class UploadPhoto(
+        val uriString: String,
+        val completion: (String) -> Unit
+    ): PhotoEvent()
 
     data class SearchTags(
         val uriString: String

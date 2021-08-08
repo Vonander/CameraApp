@@ -15,7 +15,7 @@ class SearchTags(
 ) {
 
     fun execute(
-        Authorization: String,
+        authorization: String,
         uriString: String
     ): Flow<DataState<List<Tag>>> = flow {
 
@@ -24,7 +24,7 @@ class SearchTags(
             emit(DataState.loading())
 
             val tags = getTagsFromNetwork(
-                Authorization,
+                authorization,
                 uriString
             )
 

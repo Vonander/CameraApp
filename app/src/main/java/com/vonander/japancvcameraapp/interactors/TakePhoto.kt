@@ -22,7 +22,7 @@ class TakePhoto(
 ) {
     fun execute(
         IC: ImageCapture?,
-        completion: (String) -> Unit
+        completion: () -> Unit
     ) {
 
         val imageCapture = IC ?: return
@@ -58,7 +58,7 @@ class TakePhoto(
 
     private fun savePhotoToDataStore(
         savedUri: String,
-        completion: (String) -> Unit
+        completion: () -> Unit
     ) {
         val dataStore = PhotoDataStore()
 
@@ -68,7 +68,7 @@ class TakePhoto(
                 newVaule = savedUri
             )
 
-            completion(savedUri)
+            completion()
         }
     }
 

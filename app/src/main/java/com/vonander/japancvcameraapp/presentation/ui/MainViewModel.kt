@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.vonander.japancvcameraapp.domain.Tag
 import com.vonander.japancvcameraapp.interactors.SearchTags
 import com.vonander.japancvcameraapp.interactors.TakePhoto
+import com.vonander.japancvcameraapp.interactors.UploadPhoto
 import com.vonander.japancvcameraapp.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -19,6 +20,7 @@ import javax.inject.Named
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val takePhoto: TakePhoto,
+    private val uploadPhoto: UploadPhoto,
     private val searchTags: SearchTags,
     private @Named("Authorization") val authorization: String,
 ) : ViewModel() {
@@ -36,6 +38,13 @@ class MainViewModel @Inject constructor(
                         event.completion
                     )
                 }
+                is PhotoEvent.UploadPhoto -> {
+                    uploadPhoto(
+                        event.uriString,
+                        event.completion
+                    )
+                }
+
                 is PhotoEvent.SearchTags -> {
                     searchTags(
                         event.uriString
@@ -49,14 +58,24 @@ class MainViewModel @Inject constructor(
 
     private fun takePhoto(
         imageCapture: ImageCapture,
-        completion: (String) -> Unit
+        completion: () -> Unit
     ) {
         takePhoto.execute(imageCapture, completion)
     }
 
+    private fun uploadPhoto(
+        uriString: String,
+        completion: (String) -> Unit
+    ) {
+        uploadPhoto.execute(
+            uriString = uriString,
+            completion = completion
+        )
+    }
+
     private fun searchTags(uriString: String) {
         searchTags.execute(
-            Authorization = authorization,
+            authorization = authorization,
             uriString = uriString
         ).onEach { dataState ->
             loading.value = dataState.loading

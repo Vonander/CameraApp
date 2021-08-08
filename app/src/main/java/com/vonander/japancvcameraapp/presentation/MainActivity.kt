@@ -35,10 +35,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        checkCameraPermissions()
+        checkPermissions()
     }
 
-    private fun checkCameraPermissions() {
+    private fun checkPermissions() {
         if(hasPermissions(REQUIRED_PERMISSIONS)) {
             setViewContent()
         }else {

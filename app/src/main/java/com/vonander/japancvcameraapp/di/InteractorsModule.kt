@@ -3,6 +3,7 @@ package com.vonander.japancvcameraapp.di
 import com.vonander.japancvcameraapp.BaseApplication
 import com.vonander.japancvcameraapp.interactors.SearchTags
 import com.vonander.japancvcameraapp.interactors.TakePhoto
+import com.vonander.japancvcameraapp.interactors.UploadPhoto
 import com.vonander.japancvcameraapp.network.ImaggaService
 import com.vonander.japancvcameraapp.network.util.TagDtoMapper
 import dagger.Module
@@ -21,6 +22,16 @@ object InteractorsModule {
         app: BaseApplication
     ): TakePhoto {
         return TakePhoto(
+            context = app
+        )
+    }
+
+    @ViewModelScoped
+    @Provides
+    fun providesUploadPhoto(
+        app: BaseApplication
+    ): UploadPhoto {
+        return UploadPhoto(
             context = app
         )
     }
