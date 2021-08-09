@@ -28,12 +28,8 @@ object InteractorsModule {
 
     @ViewModelScoped
     @Provides
-    fun providesUploadPhoto(
-        app: BaseApplication
-    ): UploadPhoto {
-        return UploadPhoto(
-            context = app
-        )
+    fun providesUploadPhoto(): UploadPhoto {
+        return UploadPhoto()
     }
 
     @ViewModelScoped
