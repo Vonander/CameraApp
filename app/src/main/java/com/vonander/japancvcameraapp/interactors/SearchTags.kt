@@ -1,8 +1,8 @@
 package com.vonander.japancvcameraapp.interactors
 
 import android.util.Log
-import com.vonander.japancvcameraapp.domain.Tag
 import com.vonander.japancvcameraapp.domain.data.DataState
+import com.vonander.japancvcameraapp.domain.model.Tag
 import com.vonander.japancvcameraapp.network.ImaggaService
 import com.vonander.japancvcameraapp.network.util.TagDtoMapper
 import com.vonander.japancvcameraapp.util.TAG

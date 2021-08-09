@@ -1,4 +1,4 @@
-package com.vonander.japancvcameraapp.domain
+package com.vonander.japancvcameraapp.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

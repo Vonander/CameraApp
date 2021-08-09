@@ -6,7 +6,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vonander.japancvcameraapp.domain.Tag
+import com.vonander.japancvcameraapp.domain.data.DataState
+import com.vonander.japancvcameraapp.domain.model.Tag
+import com.vonander.japancvcameraapp.domain.model.UploadResult
 import com.vonander.japancvcameraapp.interactors.SearchTags
 import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.interactors.UploadPhoto
@@ -65,7 +67,7 @@ class MainViewModel @Inject constructor(
 
     private fun uploadPhoto(
         uriString: String,
-        completion: (String) -> Unit
+        completion: (DataState<UploadResult>) -> Unit
     ) {
         uploadPhoto.execute(
             uriString = uriString,

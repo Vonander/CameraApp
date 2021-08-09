@@ -1,6 +1,6 @@
 package com.vonander.japancvcameraapp.network.util
 
-import com.vonander.japancvcameraapp.domain.Tag
+import com.vonander.japancvcameraapp.domain.model.Tag
 import com.vonander.japancvcameraapp.domain.util.DomainMapper
 import com.vonander.japancvcameraapp.network.model.TagDto
 

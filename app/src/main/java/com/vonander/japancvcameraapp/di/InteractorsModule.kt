@@ -6,6 +6,7 @@ import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.interactors.UploadPhoto
 import com.vonander.japancvcameraapp.network.ImaggaService
 import com.vonander.japancvcameraapp.network.util.TagDtoMapper
+import com.vonander.japancvcameraapp.network.util.UploadResultDtoMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,10 +27,16 @@ object InteractorsModule {
         )
     }
 
+
+
     @ViewModelScoped
     @Provides
-    fun providesUploadPhoto(): UploadPhoto {
-        return UploadPhoto()
+    fun providesUploadPhoto(
+        dtoMapper: UploadResultDtoMapper
+    ): UploadPhoto {
+        return UploadPhoto(
+            dtoMapper = dtoMapper
+        )
     }
 
     @ViewModelScoped

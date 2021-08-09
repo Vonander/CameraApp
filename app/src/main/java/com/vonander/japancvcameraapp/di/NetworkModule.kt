@@ -3,6 +3,7 @@ package com.vonander.japancvcameraapp.di
 import com.google.gson.GsonBuilder
 import com.vonander.japancvcameraapp.network.ImaggaService
 import com.vonander.japancvcameraapp.network.util.TagDtoMapper
+import com.vonander.japancvcameraapp.network.util.UploadResultDtoMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +16,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Singleton
+    @Provides
+    fun provideUploadResultDtoMapper(): UploadResultDtoMapper {
+        return UploadResultDtoMapper()
+    }
 
     @Singleton
     @Provides

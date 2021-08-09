@@ -1,4 +1,4 @@
-package com.vonander.japancvcameraapp.network
+package com.vonander.japancvcameraapp.network.responses
 
 import com.google.gson.annotations.SerializedName
 import com.vonander.japancvcameraapp.network.model.TagDto

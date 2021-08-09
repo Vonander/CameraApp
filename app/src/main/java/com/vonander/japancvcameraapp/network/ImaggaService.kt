@@ -1,5 +1,6 @@
 package com.vonander.japancvcameraapp.network
 
+import com.vonander.japancvcameraapp.network.responses.TagSearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query

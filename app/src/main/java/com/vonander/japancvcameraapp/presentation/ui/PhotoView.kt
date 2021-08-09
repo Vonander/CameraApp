@@ -66,7 +66,7 @@ fun PhotoView(
                                 event = PhotoEvent.UploadPhoto(
                                     uriString = photoUri,
                                     completion = {
-                                        println(it)
+                                        println("upload_id: ${it.data?.result?.getValue("upload_id")}")
                                     }
                                 )
                             )
