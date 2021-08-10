@@ -2,7 +2,7 @@ package com.vonander.japancvcameraapp.di
 
 import com.google.gson.GsonBuilder
 import com.vonander.japancvcameraapp.network.ImaggaService
-import com.vonander.japancvcameraapp.network.util.TagDtoMapper
+import com.vonander.japancvcameraapp.network.util.SearchTagsDtoMapper
 import com.vonander.japancvcameraapp.network.util.UploadResultDtoMapper
 import dagger.Module
 import dagger.Provides
@@ -25,8 +25,8 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideTagDtoMapper(): TagDtoMapper {
-        return TagDtoMapper()
+    fun provideTagDtoMapper(): SearchTagsDtoMapper {
+        return SearchTagsDtoMapper()
     }
 
     @Singleton

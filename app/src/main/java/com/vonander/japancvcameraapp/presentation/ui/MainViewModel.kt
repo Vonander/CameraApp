@@ -5,17 +5,14 @@ import androidx.camera.core.ImageCapture
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.vonander.japancvcameraapp.domain.data.DataState
-import com.vonander.japancvcameraapp.domain.model.Tag
+import com.vonander.japancvcameraapp.domain.model.Tags
 import com.vonander.japancvcameraapp.domain.model.UploadResult
 import com.vonander.japancvcameraapp.interactors.SearchTags
 import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.interactors.UploadPhoto
 import com.vonander.japancvcameraapp.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -27,7 +24,7 @@ class MainViewModel @Inject constructor(
     private @Named("Authorization") val authorization: String,
 ) : ViewModel() {
 
-    val tags: MutableState<List<Tag>> = mutableStateOf(listOf())
+    val tags: MutableState<List<Tags>> = mutableStateOf(listOf())
     val screenOrientation = mutableStateOf(1)
     val loading = mutableStateOf(false)
 
@@ -46,10 +43,10 @@ class MainViewModel @Inject constructor(
                         event.completion
                     )
                 }
-
                 is PhotoEvent.SearchTags -> {
                     searchTags(
-                        event.uriString
+                        event.id,
+                        event.completion
                     )
                 }
             }
@@ -75,21 +72,13 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun searchTags(uriString: String) {
-        searchTags.execute(
-            authorization = authorization,
-            uriString = uriString
-        ).onEach { dataState ->
-            loading.value = dataState.loading
-
-            dataState.data?.let { list ->
-                tags.value = list
-            }
-
-            dataState.error?.let { error ->
-                Log.e(TAG, "searchTags: $error")
-            }
-
-        }.launchIn(viewModelScope)
+    private fun searchTags(
+        id: String?,
+        completion: (DataState<Tags>) -> Unit
+    ) {
+        searchTags.executeTest(
+            id = id,
+            completion = completion
+        )
     }
 }

@@ -76,7 +76,6 @@ public class UploadPhotoHandler implements Callable<String> {
         responseStreamReader.close();
 
         String apiResponse = stringBuilder.toString();
-        System.out.println("response: " + apiResponse);
 
         responseStream.close();
         connection.disconnect();

@@ -62,11 +62,22 @@ fun PhotoView(
 
                     Button(
                         onClick = {
+
                             viewModel.onTriggerEvent(
                                 event = PhotoEvent.UploadPhoto(
                                     uriString = photoUri,
-                                    completion = {
-                                        println("upload_id: ${it.data?.result?.getValue("upload_id")}")
+                                    completion = { photoId ->
+
+                                        viewModel.onTriggerEvent(
+                                            event = PhotoEvent.SearchTags(
+                                                id = photoId.data?.result?.getValue("upload_id"),
+                                                completion = {
+
+                                                    val result = it.data?.result?.getValue("tags")
+                                                    println("$result")
+                                                }
+                                            )
+                                        )
                                     }
                                 )
                             )

@@ -4,8 +4,7 @@ import com.vonander.japancvcameraapp.BaseApplication
 import com.vonander.japancvcameraapp.interactors.SearchTags
 import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.interactors.UploadPhoto
-import com.vonander.japancvcameraapp.network.ImaggaService
-import com.vonander.japancvcameraapp.network.util.TagDtoMapper
+import com.vonander.japancvcameraapp.network.util.SearchTagsDtoMapper
 import com.vonander.japancvcameraapp.network.util.UploadResultDtoMapper
 import dagger.Module
 import dagger.Provides
@@ -27,8 +26,6 @@ object InteractorsModule {
         )
     }
 
-
-
     @ViewModelScoped
     @Provides
     fun providesUploadPhoto(
@@ -42,11 +39,9 @@ object InteractorsModule {
     @ViewModelScoped
     @Provides
     fun provideSearchTag(
-        tagService: ImaggaService,
-        dtoMapper: TagDtoMapper
+        dtoMapper: SearchTagsDtoMapper
     ): SearchTags {
         return SearchTags(
-            tagService = tagService,
             dtoMapper = dtoMapper
         )
     }

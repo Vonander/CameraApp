@@ -1,50 +1,46 @@
 package com.vonander.japancvcameraapp.interactors
 
-import android.util.Log
+import com.google.gson.Gson
 import com.vonander.japancvcameraapp.domain.data.DataState
-import com.vonander.japancvcameraapp.domain.model.Tag
-import com.vonander.japancvcameraapp.network.ImaggaService
-import com.vonander.japancvcameraapp.network.util.TagDtoMapper
-import com.vonander.japancvcameraapp.util.TAG
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import com.vonander.japancvcameraapp.domain.model.Tags
+import com.vonander.japancvcameraapp.network.model.SearchTagsDto
+import com.vonander.japancvcameraapp.network.util.SearchTagsDtoMapper
+import com.vonander.japancvcameraapp.network.util.SearchTagsHandler
+import kotlinx.coroutines.runBlocking
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class SearchTags(
-    private val tagService: ImaggaService,
-    private val dtoMapper: TagDtoMapper
+    private val dtoMapper: SearchTagsDtoMapper
 ) {
 
-    fun execute(
-        authorization: String,
-        uriString: String
-    ): Flow<DataState<List<Tag>>> = flow {
+    fun executeTest(
+        id: String?,
+        completion: (DataState<Tags>) -> Unit
+    ) = runBlocking {
 
-        try {
+        val id = id ?: return@runBlocking
 
-            emit(DataState.loading())
+        val handler = SearchTagsHandler()
+        handler.setImageUploadId(id)
 
-            val tags = getTagsFromNetwork(
-                authorization,
-                uriString
-            )
+        val executor: ExecutorService = Executors.newCachedThreadPool()
+        val future = executor.submit(handler)
+        val responseString = future.get()
 
-            emit(DataState.success(tags))
+        val searchTagsDto: SearchTagsDto = Gson().fromJson(
+            responseString,
+            SearchTagsDto::class.java
+        )
 
-        } catch (e: Exception) {
-            Log.e(TAG, "error ${e.message}")
-            emit(DataState.error<List<Tag>>(e.message ?: "Unknown Error"))
-        }
+        // TODO Check status
+
+        completion(DataState.success(getResultFromNetwork(searchTagsDto)))
     }
 
-    private suspend fun getTagsFromNetwork(
-        authorization: String,
-        uriString: String
-    ) :List<Tag> {
-        return dtoMapper.toDomainList(
-            tagService.search(
-                authorization = authorization,
-                image_url = uriString
-            ).results
-        )
+    private fun getResultFromNetwork(
+        searchTagsDto: SearchTagsDto
+    ): Tags {
+        return dtoMapper.mapToDomainModel(searchTagsDto)
     }
 }
