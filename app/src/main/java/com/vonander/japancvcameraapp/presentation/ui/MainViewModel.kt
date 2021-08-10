@@ -6,7 +6,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.vonander.japancvcameraapp.domain.data.DataState
-import com.vonander.japancvcameraapp.domain.model.Tags
+import com.vonander.japancvcameraapp.domain.model.SearchTagsResult
+import com.vonander.japancvcameraapp.domain.model.Tag
 import com.vonander.japancvcameraapp.domain.model.UploadResult
 import com.vonander.japancvcameraapp.interactors.SearchTags
 import com.vonander.japancvcameraapp.interactors.TakePhoto
@@ -24,7 +25,7 @@ class MainViewModel @Inject constructor(
     private @Named("Authorization") val authorization: String,
 ) : ViewModel() {
 
-    val tags: MutableState<List<Tags>> = mutableStateOf(listOf())
+    var tags: MutableState<List<Tag>> = mutableStateOf(listOf())
     val screenOrientation = mutableStateOf(1)
     val loading = mutableStateOf(false)
 
@@ -74,11 +75,33 @@ class MainViewModel @Inject constructor(
 
     private fun searchTags(
         id: String?,
-        completion: (DataState<Tags>) -> Unit
+        completion: (DataState<SearchTagsResult>) -> Unit
     ) {
         searchTags.executeTest(
             id = id,
             completion = completion
         )
+    }
+
+    fun updateTagsList(rawList: List<HashMap<String, Any>>?){
+        val updatedList: MutableList<Tag> = mutableListOf()
+
+        rawList?.forEach {
+            val confidenceString = it.get("confidence").toString()
+            val confidenceFloat = confidenceString.toFloat()
+            val confidenceRounded = String.format("%.1f", confidenceFloat)
+            val tagString = it.get("tag").toString()
+
+            val tagEdited = tagString.replace("{en=","").dropLast(1)
+
+            val tag = Tag(
+                confidence = confidenceRounded,
+                tag = tagEdited
+            )
+
+            updatedList.add(tag)
+        }
+
+        tags.value = updatedList
     }
 }

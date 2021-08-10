@@ -73,8 +73,9 @@ fun PhotoView(
                                                 id = photoId.data?.result?.getValue("upload_id"),
                                                 completion = {
 
-                                                    val result = it.data?.result?.getValue("tags")
-                                                    println("$result")
+                                                    viewModel.updateTagsList(
+                                                        it.data?.result?.getValue("tags")
+                                                    )
                                                 }
                                             )
                                         )

@@ -2,7 +2,7 @@ package com.vonander.japancvcameraapp.presentation.ui
 
 import androidx.camera.core.ImageCapture
 import com.vonander.japancvcameraapp.domain.data.DataState
-import com.vonander.japancvcameraapp.domain.model.Tags
+import com.vonander.japancvcameraapp.domain.model.SearchTagsResult
 import com.vonander.japancvcameraapp.domain.model.UploadResult
 
 sealed class PhotoEvent {
@@ -19,6 +19,6 @@ sealed class PhotoEvent {
 
     data class SearchTags(
         val id: String?,
-        val completion: (DataState<Tags>) -> Unit
+        val completion: (DataState<SearchTagsResult>) -> Unit
         ): PhotoEvent()
 }
