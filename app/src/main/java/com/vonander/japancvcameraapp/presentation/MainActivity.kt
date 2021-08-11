@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,12 +33,14 @@ class MainActivity : ComponentActivity() {
     private val context = this
     private var dataStore = PhotoDataStore()
 
+    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         checkPermissions()
     }
 
+    @ExperimentalFoundationApi
     private fun checkPermissions() {
         if(hasPermissions(REQUIRED_PERMISSIONS)) {
             setViewContent()
@@ -46,6 +49,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalFoundationApi
     private fun setViewContent() {
         setContent {
             val navController = rememberNavController()
@@ -86,6 +90,7 @@ class MainActivity : ComponentActivity() {
         ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    @ExperimentalFoundationApi
     private val permissionRequest =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val granted = permissions.entries.all {

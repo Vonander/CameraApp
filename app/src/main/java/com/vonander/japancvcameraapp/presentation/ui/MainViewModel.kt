@@ -50,6 +50,23 @@ class MainViewModel @Inject constructor(
                         event.completion
                     )
                 }
+
+                is PhotoEvent.debug -> {
+                    println("okej debug mode enabled")
+                    val updatedList: MutableList<Tag> = mutableListOf()
+
+                    for (i in 1..30) {
+                        val tag = Tag(
+                            confidence = "$i",
+                            tag = "#imageTag$i"
+                        )
+
+                        updatedList.add(tag)
+                    }
+
+                    tags.value = updatedList
+                }
+
             }
         } catch (e: Exception) {
             Log.e(TAG, "onTriggerEvent: Exception: ${e}, ${e.cause}")

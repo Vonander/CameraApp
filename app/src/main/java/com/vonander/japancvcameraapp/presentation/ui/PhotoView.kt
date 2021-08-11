@@ -1,11 +1,13 @@
 package com.vonander.japancvcameraapp.presentation.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.material.Button
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -14,30 +16,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.glide.rememberGlidePainter
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.navigation.Screen
+import com.vonander.japancvcameraapp.presentation.components.CustomButton
+import com.vonander.japancvcameraapp.presentation.components.TagListHeader
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 
+@ExperimentalFoundationApi
 @Composable
 fun PhotoView(
     viewModel: MainViewModel,
     photoUri: String,
     onNavigationToCameraPreviewScreen: (String) -> Unit,
 ) {
+    
+    val tags = viewModel.tags.value
 
     JapanCVCameraAppTheme() {
 
         Surface(
-            color = MaterialTheme.colors.surface
+            color = MaterialTheme.colors.surface,
+            modifier = Modifier
+                .fillMaxSize()
         ) {
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 40.dp)
+                    .padding(top = 10.dp)
             ) {
 
                 Image(
@@ -54,17 +64,93 @@ fun PhotoView(
                     contentScale = ContentScale.Inside,
                     modifier = Modifier
                         .requiredSize(width = 300.dp, height = 400.dp)
-                        .padding(6.dp)
+                        .padding(10.dp)
                         .scale(scaleX = -1f, scaleY = 1f)
                 )
 
+                if (tags.isNotEmpty()) {
+
+                    TagListHeader(
+                        confidence = tags[0].confidence,
+                        tag = tags[0].tag
+                    )
+
+                    LazyVerticalGrid(
+                        cells = GridCells.Adaptive(minSize = 150.dp)
+                    ) {
+
+                        items(tags.size) { index ->
+
+                            if (index == tags.size) {
+
+                                CustomButton(
+                                    modifier = Modifier.padding(top = 40.dp),
+                                    onClick = {
+                                        val route = Screen.CameraPreview.route
+                                        onNavigationToCameraPreviewScreen(route)
+                                    },
+                                    buttonText = "Take new photo?"
+                                )
+                            } else {
+
+                                Text(
+                                    text = "${tags[index].confidence}% ${tags[index].tag}",
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.body1,
+                                    color = MaterialTheme.colors.onBackground,
+                                    modifier = Modifier.padding(10.dp)
+                                )
+                            }
+                        }
+
+                    }
+
+/*                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        itemsIndexed(
+                            items = tags
+                        ) { index, tag ->
+
+                            if (index == 0) {
+                                TagListHeader(
+                                    confidence = tag.confidence,
+                                    tag = tag.tag
+                                )
+                            } else {
+                                Text(
+                                    text = "${tag.confidence} ${tag.tag}",
+                                    style = MaterialTheme.typography.body1,
+                                    color = MaterialTheme.colors.onBackground
+                                )
+                            }
+
+                            if (index == tags.lastIndex) {
+                                CustomButton(
+                                    modifier = Modifier.padding(top = 40.dp),
+                                    onClick = {
+                                        val route = Screen.CameraPreview.route
+                                        onNavigationToCameraPreviewScreen(route)
+                                    },
+                                    buttonText = "Take new photo?"
+                                )
+                            }
+                        }
+                    }*/
+                }
+
                 if(!photoUri.isNullOrBlank()) {
 
-                    Button(
+                    CustomButton(
+                        modifier = Modifier.padding(top = 40.dp),
+                        buttonText = "Upload photo",
                         onClick = {
-
                             viewModel.onTriggerEvent(
-                                event = PhotoEvent.UploadPhoto(
+
+                                event = PhotoEvent.debug
+
+/*                                event = PhotoEvent.UploadPhoto(
                                     uriString = photoUri,
                                     completion = { photoId ->
 
@@ -80,26 +166,20 @@ fun PhotoView(
                                             )
                                         )
                                     }
-                                )
+                                )*/
                             )
-                        },
-                        modifier = Modifier
-                            .padding(top = 40.dp)
-                    ) {
-                        Text(text = "Upload photo")
-                    }
+                        }
+                    )
                 }
 
-                Button(
+                CustomButton(
+                    modifier = Modifier.padding(top = 40.dp),
+                    buttonText = "Take Photo",
                     onClick = {
                         val route = Screen.CameraPreview.route
                         onNavigationToCameraPreviewScreen(route)
-                    },
-                    modifier = Modifier
-                        .padding(top = 40.dp)
-                ) {
-                    Text(text = "Take Photo")
-                }
+                    }
+                )
             }
         }
     }
