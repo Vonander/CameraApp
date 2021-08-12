@@ -29,7 +29,7 @@ import com.vonander.japancvcameraapp.util.TAG
 @Composable
 fun CameraPreview(
     viewModel: MainViewModel,
-    onNavigationToPhotoViewScreen: (String) -> Unit,
+    onNavControllerNavigate: (String) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -112,14 +112,13 @@ fun CameraPreview(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            onNavigationToPhotoViewScreen = onNavigationToPhotoViewScreen,
+            onNavigationToPhotoViewScreen = onNavControllerNavigate,
             onTakePhoto = {
                 viewModel.onTriggerEvent(
                     event = PhotoEvent.TakePhoto(
                         imageCapture = imageCapture,
                         completion = {
-                            val route = Screen.PhotoView.route
-                            onNavigationToPhotoViewScreen(route)
+                            onNavControllerNavigate(Screen.PhotoView.route)
                         }
                     )
                 )

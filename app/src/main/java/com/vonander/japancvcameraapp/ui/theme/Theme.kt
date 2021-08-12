@@ -11,12 +11,13 @@ import androidx.compose.ui.graphics.Color
 @SuppressLint("ConflictingOnColor")
 private val DarkColorPalette = darkColors(
     primary = BlueGray600,
-    primaryVariant = BlueGray900,
+    primaryVariant = Color.White,
     secondary = Teal300,
     background = BlueGray900,
     surface = BlueGray900,
     onPrimary = Color.White,
-    onBackground = BlueGray400
+    onBackground = Color.Black,
+    onSurface = BlueGray400,
 )
 
 @SuppressLint("ConflictingOnColor")
@@ -27,7 +28,8 @@ private val LightColorPalette = lightColors(
     background = Color.White,
     surface = Color.White,
     onPrimary = Color.White,
-    onBackground = BlueGray900
+    onBackground = BlueGray400,
+    onSurface = BlueGray400,
 
     /* Other default colors to override
     background = Color.White,

@@ -32,8 +32,7 @@ fun CameraPreviewToolbar(
             IconButton(
                 modifier = Modifier.padding(start = 10.dp, top = 30.dp),
                 onClick = {
-                    val route = Screen.PhotoView.route
-                    onNavigationToPhotoViewScreen(route)
+                    onNavigationToPhotoViewScreen(Screen.PhotoView.route)
                 }
             ) {
                 Icon(Icons.Outlined.ArrowBack,

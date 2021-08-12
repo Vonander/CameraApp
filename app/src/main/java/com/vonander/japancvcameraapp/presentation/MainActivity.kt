@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
                     PhotoView(
                         viewModel = viewModel,
                         photoUri = getLatestStoredPhoto(context),
-                        onNavigationToCameraPreviewScreen = {
+                        onNavControllerNavigate = {
                             navController.navigate(it)
                         }
                     )
@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                     val viewModel: MainViewModel = viewModel("MainViewModel", factory)
                     CameraPreview(
                         viewModel = viewModel,
-                        onNavigationToPhotoViewScreen = {
+                        onNavControllerNavigate = {
                             navController.navigate(it)
                         }
                     )
