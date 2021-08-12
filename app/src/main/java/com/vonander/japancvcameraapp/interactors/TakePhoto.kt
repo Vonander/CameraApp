@@ -3,7 +3,6 @@ package com.vonander.japancvcameraapp.interactors
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.core.content.ContextCompat
@@ -21,11 +20,11 @@ class TakePhoto(
     private val context: Context
 ) {
     fun execute(
-        IC: ImageCapture?,
+        imageCapture: ImageCapture?,
         completion: () -> Unit
     ) {
 
-        val imageCapture = IC ?: return
+        val imageCapture = imageCapture ?: return
 
         val photoFile = File(
             getOutputDirectory(context),
@@ -47,9 +46,8 @@ class TakePhoto(
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
-                    val msg = "Photo capture succeeded"
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, "Photo capture succeeded: $savedUri")
+
                     savePhotoToDataStore(savedUri.toString(), completion)
                 }
             }

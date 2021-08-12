@@ -20,15 +20,15 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.CameraPreviewToolbar
-import com.vonander.japancvcameraapp.presentation.ui.MainViewModel
 import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
 import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
+import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import com.vonander.japancvcameraapp.util.TAG
 
 @Composable
 fun CameraPreview(
-    viewModel: MainViewModel,
+    viewModel: CameraPreviewViewModel,
     onNavControllerNavigate: (String) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -42,87 +42,90 @@ fun CameraPreview(
         .build()
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    JapanCVCameraAppTheme() {
 
-        val faceDetectionOverlay = FaceDetectionOverlay(context)
-        faceDetectionOverlay.setOrientation(viewModel.screenOrientation.value)
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
 
-        AndroidView(
-            factory = { ctx ->
-                val previewView = PreviewView(ctx)
-                val executor = ContextCompat.getMainExecutor(ctx)
+            val faceDetectionOverlay = FaceDetectionOverlay(context)
+            faceDetectionOverlay.setOrientation(viewModel.screenOrientation.value)
 
-                cameraProviderFuture.addListener({
-                    val cameraProvider = cameraProviderFuture.get()
-                    val preview = Preview.Builder().build().also {
-                        it.setSurfaceProvider(previewView.surfaceProvider)
-                    }
+            AndroidView(
+                factory = { ctx ->
+                    val previewView = PreviewView(ctx)
+                    val executor = ContextCompat.getMainExecutor(ctx)
 
-                    val cameraLens =
-                        if (cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
-                            CameraSelector.LENS_FACING_FRONT
-                        } else {
-                            CameraSelector.LENS_FACING_BACK
+                    cameraProviderFuture.addListener({
+                        val cameraProvider = cameraProviderFuture.get()
+                        val preview = Preview.Builder().build().also {
+                            it.setSurfaceProvider(previewView.surfaceProvider)
                         }
 
-                    val cameraSelector = CameraSelector.Builder()
-                        .requireLensFacing(cameraLens)
-                        .build()
+                        val cameraLens =
+                            if (cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
+                                CameraSelector.LENS_FACING_FRONT
+                            } else {
+                                CameraSelector.LENS_FACING_BACK
+                            }
 
-                    val analysisUseCase = ImageAnalysis.Builder()
-                        .build()
-                        .also {
-                            it.setAnalyzer(
-                                executor, FaceAnalyzer(
-                                    lifecycle = lifecycleOwner.lifecycle,
-                                    overlay = faceDetectionOverlay
+                        val cameraSelector = CameraSelector.Builder()
+                            .requireLensFacing(cameraLens)
+                            .build()
+
+                        val analysisUseCase = ImageAnalysis.Builder()
+                            .build()
+                            .also {
+                                it.setAnalyzer(
+                                    executor, FaceAnalyzer(
+                                        lifecycle = lifecycleOwner.lifecycle,
+                                        overlay = faceDetectionOverlay
+                                    )
                                 )
+                            }
+
+                        try {
+                            cameraProvider.unbindAll()
+
+                            cameraProvider.bindToLifecycle(
+                                lifecycleOwner,
+                                cameraSelector,
+                                preview,
+                                imageCapture,
+                                analysisUseCase
                             )
+                        } catch (e: Exception) {
+                            Log.e(TAG, "CameraPreview Use case binding failed", e)
                         }
 
-                    try {
-                        cameraProvider.unbindAll()
+                    }, executor)
 
-                        cameraProvider.bindToLifecycle(
-                            lifecycleOwner,
-                            cameraSelector,
-                            preview,
-                            imageCapture,
-                            analysisUseCase
+                    previewView
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+
+            AndroidView(
+                factory = { faceDetectionOverlay },
+                modifier = Modifier.fillMaxSize()
+            )
+
+            CameraPreviewToolbar(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                onNavigationToPhotoViewScreen = onNavControllerNavigate,
+                onTakePhoto = {
+                    viewModel.onTriggerEvent(
+                        event = PhotoEvent.TakePhoto(
+                            imageCapture = imageCapture,
+                            completion = {
+                                onNavControllerNavigate(Screen.PhotoView.route)
+                            }
                         )
-                    } catch (e: Exception) {
-                        Log.e(TAG, "CameraPreview Use case binding failed", e)
-                    }
-
-                }, executor)
-
-                previewView
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-
-        AndroidView(
-            factory = { faceDetectionOverlay },
-            modifier = Modifier.fillMaxSize()
-        )
-
-        CameraPreviewToolbar(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            onNavigationToPhotoViewScreen = onNavControllerNavigate,
-            onTakePhoto = {
-                viewModel.onTriggerEvent(
-                    event = PhotoEvent.TakePhoto(
-                        imageCapture = imageCapture,
-                        completion = {
-                            onNavControllerNavigate(Screen.PhotoView.route)
-                        }
                     )
-                )
-            }
-        )
+                }
+            )
+        }
     }
 }

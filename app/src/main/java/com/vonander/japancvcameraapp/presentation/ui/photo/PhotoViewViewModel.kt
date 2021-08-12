@@ -1,7 +1,6 @@
-package com.vonander.japancvcameraapp.presentation.ui
+package com.vonander.japancvcameraapp.presentation.ui.photo
 
 import android.util.Log
-import androidx.camera.core.ImageCapture
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -10,34 +9,26 @@ import com.vonander.japancvcameraapp.domain.model.SearchTagsResult
 import com.vonander.japancvcameraapp.domain.model.Tag
 import com.vonander.japancvcameraapp.domain.model.UploadResult
 import com.vonander.japancvcameraapp.interactors.SearchTags
-import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.interactors.UploadPhoto
+import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    private val takePhoto: TakePhoto,
+class PhotoViewViewModel @Inject constructor(
     private val uploadPhoto: UploadPhoto,
-    private val searchTags: SearchTags,
-    private @Named("Authorization") val authorization: String,
+    private val searchTags: SearchTags
 ) : ViewModel() {
 
     var tags: MutableState<List<Tag>> = mutableStateOf(listOf())
     val screenOrientation = mutableStateOf(1)
     val loading = mutableStateOf(false)
+    val snackbarMessage = mutableStateOf("")
 
     fun onTriggerEvent(event: PhotoEvent) {
         try {
             when(event) {
-                is PhotoEvent.TakePhoto -> {
-                    takePhoto(
-                        event.imageCapture,
-                        event.completion
-                    )
-                }
                 is PhotoEvent.UploadPhoto -> {
                     uploadPhoto(
                         event.uriString,
@@ -71,13 +62,6 @@ class MainViewModel @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "onTriggerEvent: Exception: ${e}, ${e.cause}")
         }
-    }
-
-    private fun takePhoto(
-        imageCapture: ImageCapture,
-        completion: () -> Unit
-    ) {
-        takePhoto.execute(imageCapture, completion)
     }
 
     private fun uploadPhoto(

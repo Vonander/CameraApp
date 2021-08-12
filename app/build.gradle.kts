@@ -72,7 +72,7 @@ dependencies {
     implementation ("com.google.mlkit:face-detection:16.1.2")
 
     implementation ("com.github.bumptech.glide:glide:4.12.0")
-    implementation ("com.android.support:support-fragment:28.0.0")
+    implementation ("androidx.fragment:fragment-ktx:1.3.6")
     implementation ("com.google.accompanist:accompanist-glide:0.10.0")
 
     implementation ("com.google.dagger:hilt-android-compiler:${rootProject.extra["hilt_version"]}")

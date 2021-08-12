@@ -20,9 +20,10 @@ import androidx.navigation.compose.rememberNavController
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.datastore.PhotoDataStore
 import com.vonander.japancvcameraapp.navigation.Screen
-import com.vonander.japancvcameraapp.presentation.ui.MainViewModel
 import com.vonander.japancvcameraapp.presentation.ui.PhotoView
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreview
+import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreviewViewModel
+import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
 import com.vonander.japancvcameraapp.util.REQUIRED_PERMISSIONS
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
@@ -60,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
                 composable(route = Screen.PhotoView.route) { navBackStackEntry ->
                     val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
-                    val viewModel: MainViewModel = viewModel("MainViewModel", factory)
+                    val viewModel: PhotoViewViewModel = viewModel("PhotoViewViewModel", factory)
                     PhotoView(
                         viewModel = viewModel,
                         photoUri = getLatestStoredPhoto(context),
@@ -72,7 +73,7 @@ class MainActivity : ComponentActivity() {
 
                 composable(route = Screen.CameraPreview.route) { navBackStackEntry ->
                     val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
-                    val viewModel: MainViewModel = viewModel("MainViewModel", factory)
+                    val viewModel: CameraPreviewViewModel = viewModel("CameraPreviewViewModel", factory)
                     CameraPreview(
                         viewModel = viewModel,
                         onNavControllerNavigate = {

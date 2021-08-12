@@ -2,16 +2,13 @@ package com.vonander.japancvcameraapp.presentation.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,35 +16,46 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import com.google.accompanist.glide.rememberGlidePainter
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.CustomBottomBar
 import com.vonander.japancvcameraapp.presentation.components.CustomButton
+import com.vonander.japancvcameraapp.presentation.components.DefaultSnackbar
 import com.vonander.japancvcameraapp.presentation.components.TagListHeader
+import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @Composable
 fun PhotoView(
-    viewModel: MainViewModel,
+    viewModel: PhotoViewViewModel,
     photoUri: String,
     onNavControllerNavigate: (String) -> Unit,
 ) {
     val tags = viewModel.tags.value
+    val snackbarMessage = viewModel.snackbarMessage.value
+    val scaffoldState = rememberScaffoldState()
 
-    JapanCVCameraAppTheme {
+    JapanCVCameraAppTheme() {
 
         Scaffold(
-            topBar = {},
-            bottomBar = {CustomBottomBar(onNavControllerNavigate)},
-            drawerContent = {},
+            bottomBar = {
+                CustomBottomBar(
+                    onNavControllerNavigate = onNavControllerNavigate
+                )
+            },
+            //drawerContent = {},
+            scaffoldState = scaffoldState,
+            snackbarHost = {
+                scaffoldState.snackbarHostState
+            }
         ) {
 
-            Surface(
-                color = MaterialTheme.colors.surface,
-                modifier = Modifier
-                    .fillMaxSize()
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
 
                 Column(
@@ -84,12 +92,7 @@ fun PhotoView(
 
                         LazyVerticalGrid(
                             cells = GridCells.Adaptive(minSize = 150.dp),
-                            modifier = Modifier.padding(
-                                start = 0.dp,
-                                top = 0.dp,
-                                end = 0.dp,
-                                bottom = 20.dp
-                            )
+                            modifier = Modifier.padding(bottom = 20.dp)
                         ) {
 
                             items(tags.size) { index ->
@@ -150,6 +153,9 @@ fun PhotoView(
                             modifier = Modifier.padding(top = 40.dp),
                             buttonText = "Search for tags #",
                             onClick = {
+
+                                viewModel.snackbarMessage.value = "snackbarMessage!"
+
                                 viewModel.onTriggerEvent(
 
                                     event = PhotoEvent.debug
@@ -184,6 +190,26 @@ fun PhotoView(
                         onClick = {
                             onNavControllerNavigate(Screen.CameraPreview.route)
                         }
+                    )
+                }
+
+                if (snackbarMessage.isNotBlank()) {
+
+                    viewModel.viewModelScope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar (
+                            message = snackbarMessage,
+                            actionLabel = "Hide"
+                        )
+                    }
+
+                    DefaultSnackbar(
+                        snackbarHostState = scaffoldState.snackbarHostState,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 50.dp),
+                        backgroundColor = MaterialTheme.colors.secondary,
+                        textColor = MaterialTheme.colors.onPrimary,
+                        onDismiss = { viewModel.snackbarMessage.value == ""}
                     )
                 }
             }
