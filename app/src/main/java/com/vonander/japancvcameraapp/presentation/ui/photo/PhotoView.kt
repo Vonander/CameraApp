@@ -107,42 +107,7 @@ fun PhotoView(
                                     )
                                 }
                             }
-
                         }
-
-/*                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-
-                        itemsIndexed(
-                            items = tags
-                        ) { index, tag ->
-
-                            if (index == 0) {
-                                TagListHeader(
-                                    confidence = tag.confidence,
-                                    tag = tag.tag
-                                )
-                            } else {
-                                Text(
-                                    text = "${tag.confidence} ${tag.tag}",
-                                    style = MaterialTheme.typography.body1,
-                                    color = MaterialTheme.colors.onBackground
-                                )
-                            }
-
-                            if (index == tags.lastIndex) {
-                                CustomButton(
-                                    modifier = Modifier.padding(top = 40.dp),
-                                    onClick = {
-                                        val route = Screen.CameraPreview.route
-                                        onNavigationToCameraPreviewScreen(route)
-                                    },
-                                    buttonText = "Take new photo?"
-                                )
-                            }
-                        }
-                    }*/
                     }
 
                     var takePhotoButtonText = "Take Photo"
@@ -158,25 +123,28 @@ fun PhotoView(
 
                                 viewModel.onTriggerEvent(
 
-                                    event = PhotoEvent.debug
+                                    event = PhotoEvent.UploadPhoto(
+                                        uriString = photoUri,
+                                        completion = { dataState ->
 
-/*                                event = PhotoEvent.UploadPhoto(
-                                    uriString = photoUri,
-                                    completion = { photoId ->
+                                            dataState.error?.let { message ->
+                                                viewModel.snackbarMessage.value = message
+                                            }
 
-                                        viewModel.onTriggerEvent(
-                                            event = PhotoEvent.SearchTags(
-                                                id = photoId.data?.result?.getValue("upload_id"),
-                                                completion = {
-
-                                                    viewModel.updateTagsList(
-                                                        it.data?.result?.getValue("tags")
+                                            dataState.data?.let {
+                                                viewModel.onTriggerEvent(
+                                                    event = PhotoEvent.SearchTags(
+                                                        id = dataState.data.result.getValue("upload_id"),
+                                                        completion = { dataState ->
+                                                            viewModel.updateTagsList(
+                                                                dataState.data?.result?.getValue("tags")
+                                                            )
+                                                        }
                                                     )
-                                                }
-                                            )
-                                        )
-                                    }
-                                )*/
+                                                )
+                                            }
+                                        }
+                                    )
                                 )
                             }
                         )
@@ -208,7 +176,6 @@ fun PhotoView(
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 50.dp),
                         onDismiss = {
-                            viewModel.snackbarMessage.value = ""
                             scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
                         }
                     )

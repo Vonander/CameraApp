@@ -20,22 +20,26 @@ class UploadPhoto(
         completion: (DataState<UploadResult>) -> Unit
     ) = runBlocking {
 
-        val uriPath = Uri.parse(uriString).path ?: return@runBlocking
+        try {
+            val uriPath = Uri.parse(uriString).path
+            val newFile = File(uriPath)
+            val handler = UploadPhotoHandler()
+            handler.setFileToUpload(newFile)
 
-        val newFile = File(uriPath)
-        val handler = UploadPhotoHandler()
-        handler.setFileToUpload(newFile)
+            val executor: ExecutorService = Executors.newCachedThreadPool()
+            val future = executor.submit(handler)
+            val responseString = future.get()
 
-        val executor: ExecutorService = Executors.newCachedThreadPool()
-        val future = executor.submit(handler)
-        val responseString = future.get()
+            val uploadResultDto: UploadResultDto = Gson().fromJson(
+                responseString,
+                UploadResultDto::class.java
+            )
 
-        val uploadResultDto: UploadResultDto = Gson().fromJson(
-            responseString,
-            UploadResultDto::class.java
-        )
+            completion(DataState.success(getResultFromNetwork(uploadResultDto)))
 
-        completion(DataState.success(getResultFromNetwork(uploadResultDto)))
+        } catch (e: Exception) {
+            completion(DataState.error("Upload photo error $e"))
+        }
     }
 
     private fun getResultFromNetwork(

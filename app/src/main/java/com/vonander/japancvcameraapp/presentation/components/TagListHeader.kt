@@ -12,15 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
 
 @Composable
 fun TagListHeader(
     confidence: String,
     tag: String
 ) {
-    val confidenceFloat = confidence.toFloat()
-    val confidenceRounded = confidenceFloat.roundToInt()
 
     Card(
         shape = MaterialTheme.shapes.small,
@@ -34,7 +31,7 @@ fun TagListHeader(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "$confidenceRounded% sure that this is some kind of $tag",
+                text = "$confidence% sure that this is some kind of $tag",
                 color = MaterialTheme.colors.primaryVariant,
                 style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Bold,

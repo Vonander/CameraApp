@@ -21,6 +21,4 @@ sealed class PhotoEvent {
         val id: String?,
         val completion: (DataState<SearchTagsResult>) -> Unit
         ): PhotoEvent()
-
-    object debug: PhotoEvent()
 }
