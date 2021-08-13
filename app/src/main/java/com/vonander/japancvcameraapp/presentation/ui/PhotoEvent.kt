@@ -9,7 +9,7 @@ sealed class PhotoEvent {
 
     data class TakePhoto(
         val imageCapture: ImageCapture,
-        val completion: () -> Unit
+        val completion: (DataState<String>) -> Unit
         ): PhotoEvent()
 
     data class UploadPhoto(

@@ -10,6 +10,8 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -18,13 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.CameraPreviewToolbar
+import com.vonander.japancvcameraapp.presentation.components.DecoupledSnackbar
 import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
 import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import com.vonander.japancvcameraapp.util.TAG
+import kotlinx.coroutines.launch
 
 @Composable
 fun CameraPreview(
@@ -33,7 +38,7 @@ fun CameraPreview(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-
+    val snackbarHostState = remember{ SnackbarHostState() }
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
     val imageCapture = remember {
@@ -119,13 +124,43 @@ fun CameraPreview(
                     viewModel.onTriggerEvent(
                         event = PhotoEvent.TakePhoto(
                             imageCapture = imageCapture,
-                            completion = {
-                                onNavControllerNavigate(Screen.PhotoView.route)
+                            completion = { dataState ->
+
+                                dataState.data?.let {
+                                    onNavControllerNavigate(Screen.PhotoView.route)
+                                }
+
+                                dataState.error?.let { message ->
+                                    showSnackbar(
+                                        viewModel = viewModel,
+                                        snackbarHostState = snackbarHostState,
+                                        message = message,
+                                    )
+                                }
                             }
                         )
                     )
                 }
             )
+
+            DecoupledSnackbar(
+                snackbarHostState = snackbarHostState,
+                onclick = {snackbarHostState.currentSnackbarData?.dismiss()}
+            )
         }
+    }
+}
+
+private fun showSnackbar(
+    viewModel: CameraPreviewViewModel,
+    snackbarHostState: SnackbarHostState,
+    message: String
+) {
+    viewModel.viewModelScope.launch {
+        snackbarHostState.showSnackbar(
+            message = message,
+            actionLabel = "Hide",
+            duration = SnackbarDuration.Short
+        )
     }
 }

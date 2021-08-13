@@ -91,6 +91,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:${rootProject.extra["retrofit_version"]}")
     implementation("com.squareup.retrofit2:converter-gson:${rootProject.extra["retrofit_version"]}")
 
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
+
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

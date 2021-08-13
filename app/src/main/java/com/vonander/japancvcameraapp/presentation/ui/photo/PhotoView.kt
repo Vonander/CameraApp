@@ -154,7 +154,7 @@ fun PhotoView(
                             buttonText = "Search for tags #",
                             onClick = {
 
-                                viewModel.snackbarMessage.value = "snackbarMessage!"
+                                viewModel.snackbarMessage.value = "New # tags updated!"
 
                                 viewModel.onTriggerEvent(
 
@@ -207,9 +207,10 @@ fun PhotoView(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 50.dp),
-                        backgroundColor = MaterialTheme.colors.secondary,
-                        textColor = MaterialTheme.colors.onPrimary,
-                        onDismiss = { viewModel.snackbarMessage.value == ""}
+                        onDismiss = {
+                            viewModel.snackbarMessage.value = ""
+                            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+                        }
                     )
                 }
             }

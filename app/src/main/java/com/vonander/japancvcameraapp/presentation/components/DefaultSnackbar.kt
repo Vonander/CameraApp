@@ -4,15 +4,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun DefaultSnackbar(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier,
-    backgroundColor: Color,
-    textColor: Color,
     onDismiss: () -> Unit
 ) {
     SnackbarHost(
@@ -31,16 +28,16 @@ fun DefaultSnackbar(
                             Text(
                                 text = actionLabel,
                                 style = MaterialTheme.typography.body2,
-                                color = textColor
+                                color = MaterialTheme.colors.onPrimary
                             )
                         }
                     }
                 },
-                backgroundColor = backgroundColor
+                backgroundColor = MaterialTheme.colors.secondary
             ) {
                 Text(text = data.message,
                     style = MaterialTheme.typography.body2,
-                    color = textColor
+                    color = MaterialTheme.colors.onPrimary
                 )
             }
         },

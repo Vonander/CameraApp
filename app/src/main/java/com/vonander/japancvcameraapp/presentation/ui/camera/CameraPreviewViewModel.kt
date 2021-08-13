@@ -4,26 +4,34 @@ import android.util.Log
 import androidx.camera.core.ImageCapture
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.vonander.japancvcameraapp.BaseApplication
+import com.vonander.japancvcameraapp.datastore.PhotoDataStore
+import com.vonander.japancvcameraapp.domain.data.DataState
 import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CameraPreviewViewModel @Inject constructor(
+    private val app: BaseApplication,
     private val takePhoto: TakePhoto,
 ): ViewModel() {
 
     val screenOrientation = mutableStateOf(1)
+    val savedUri = mutableStateOf("")
 
     fun onTriggerEvent(event: PhotoEvent) {
         try {
             when (event) {
                 is PhotoEvent.TakePhoto -> {
                     takePhoto(
-                        event.imageCapture,
-                        event.completion
+                        imageCapture = event.imageCapture,
+                        cameraPreviewCompletion = event.completion
                     )
                 }
             }
@@ -34,11 +42,32 @@ class CameraPreviewViewModel @Inject constructor(
 
     private fun takePhoto(
         imageCapture: ImageCapture,
-        completion: () -> Unit
+        cameraPreviewCompletion: (DataState<String>) -> Unit
     ) {
         takePhoto.execute(
             imageCapture = imageCapture,
-            completion = completion
+            cameraPreviewCompletion = cameraPreviewCompletion,
+            saveUriToViewModelCompletion = { dataState ->
+
+                dataState.data?.let { uri ->
+                    savedUri.value = uri
+
+                    savePhotoToDataStore(savedUri = uri)
+                }
+            }
         )
+    }
+
+    private fun savePhotoToDataStore(
+        savedUri: String
+    ) {
+        val dataStore = PhotoDataStore()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            dataStore.setPhotoUriString(
+                context = app,
+                newVaule = savedUri
+            )
+        }
     }
 }

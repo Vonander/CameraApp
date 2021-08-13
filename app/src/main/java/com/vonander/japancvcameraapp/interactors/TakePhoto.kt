@@ -3,15 +3,13 @@ package com.vonander.japancvcameraapp.interactors
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.core.content.ContextCompat
-import com.vonander.japancvcameraapp.datastore.PhotoDataStore
+import com.vonander.japancvcameraapp.domain.data.DataState
 import com.vonander.japancvcameraapp.presentation.MainActivity.Companion.getOutputDirectory
 import com.vonander.japancvcameraapp.util.TAG
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,7 +19,8 @@ class TakePhoto(
 ) {
     fun execute(
         imageCapture: ImageCapture?,
-        completion: () -> Unit
+        cameraPreviewCompletion: (DataState<String>) -> Unit,
+        saveUriToViewModelCompletion: (DataState<String>) -> Unit
     ) {
 
         val imageCapture = imageCapture ?: return
@@ -42,32 +41,22 @@ class TakePhoto(
 
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    cameraPreviewCompletion(DataState.error("Photo capture failed: ${exc.message}"))
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
-                    Log.d(TAG, "Photo capture succeeded: $savedUri")
 
-                    savePhotoToDataStore(savedUri.toString(), completion)
+                    showToast(message = "Photo capture succeeded")
+                    cameraPreviewCompletion(DataState.success(savedUri.toString()))
+                    saveUriToViewModelCompletion(DataState.success(savedUri.toString()))
                 }
             }
         )
     }
 
-    private fun savePhotoToDataStore(
-        savedUri: String,
-        completion: () -> Unit
-    ) {
-        val dataStore = PhotoDataStore()
-
-        CoroutineScope(Dispatchers.Main).launch {
-            dataStore.setPhotoUriString(
-                context = context,
-                newVaule = savedUri
-            )
-
-            completion()
-        }
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
