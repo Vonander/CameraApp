@@ -64,7 +64,7 @@ fun CustomBottomBar(
             },
             selected = false,
             onClick = {
-                //onNavControllerNavigate(Screen.CameraPreview.route)
+                onNavControllerNavigate(Screen.AboutView.route)
             }
         )
     }

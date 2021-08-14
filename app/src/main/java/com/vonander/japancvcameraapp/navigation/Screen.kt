@@ -5,4 +5,5 @@ sealed class Screen(
 ) {
     object PhotoView: Screen("photoView")
     object CameraPreview: Screen("cameraPreview")
+    object AboutView: Screen("aboutView")
 }

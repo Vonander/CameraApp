@@ -20,6 +20,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.navigation.Screen
+import com.vonander.japancvcameraapp.presentation.components.AboutView
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreview
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreviewViewModel
 import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoView
@@ -109,6 +110,20 @@ class MainActivity : ComponentActivity() {
                         onNavControllerNavigate = {
                             navController.navigate(it)
                         }
+                    )
+                }
+
+                composable(
+                    route = Screen.AboutView.route,
+                    enterTransition = {_,_ ->
+                        fadeIn(animationSpec = tween(1000))
+                    },
+                    exitTransition = {_,_ ->
+                       fadeOut(animationSpec = tween(1000))
+                    }
+                ) {
+                    AboutView(
+                        context = context
                     )
                 }
             }
