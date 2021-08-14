@@ -26,6 +26,7 @@ import com.vonander.japancvcameraapp.presentation.components.CameraPreviewToolba
 import com.vonander.japancvcameraapp.presentation.components.DecoupledSnackbar
 import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
+import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
 import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import com.vonander.japancvcameraapp.util.TAG
@@ -33,7 +34,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CameraPreview(
-    viewModel: CameraPreviewViewModel,
+    cameraPreviewViewModel: CameraPreviewViewModel,
+    photoViewViewModel: PhotoViewViewModel,
     onNavControllerNavigate: (String) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -54,7 +56,7 @@ fun CameraPreview(
         ) {
 
             val faceDetectionOverlay = FaceDetectionOverlay(context)
-            faceDetectionOverlay.setOrientation(viewModel.screenOrientation.value)
+            faceDetectionOverlay.setOrientation(1)
 
             AndroidView(
                 factory = { ctx ->
@@ -121,18 +123,19 @@ fun CameraPreview(
                     .fillMaxWidth(),
                 onNavigationToPhotoViewScreen = onNavControllerNavigate,
                 onTakePhoto = {
-                    viewModel.onTriggerEvent(
+                    cameraPreviewViewModel.onTriggerEvent(
                         event = PhotoEvent.TakePhoto(
                             imageCapture = imageCapture,
                             completion = { dataState ->
 
-                                dataState.data?.let {
+                                dataState.data?.let { photoUri ->
+                                    photoViewViewModel.photoUri.value = photoUri
                                     onNavControllerNavigate(Screen.PhotoView.route)
                                 }
 
                                 dataState.error?.let { message ->
                                     showSnackbar(
-                                        viewModel = viewModel,
+                                        viewModel = cameraPreviewViewModel,
                                         snackbarHostState = snackbarHostState,
                                         message = message,
                                     )

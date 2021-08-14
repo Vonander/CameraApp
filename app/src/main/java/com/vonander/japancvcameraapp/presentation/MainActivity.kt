@@ -7,18 +7,18 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
-import androidx.hilt.navigation.HiltViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.vonander.japancvcameraapp.R
-import com.vonander.japancvcameraapp.datastore.PhotoDataStore
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.ui.PhotoView
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreview
@@ -26,14 +26,13 @@ import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreviewViewMod
 import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
 import com.vonander.japancvcameraapp.util.REQUIRED_PERMISSIONS
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
 import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val context = this
-    private var dataStore = PhotoDataStore()
 
+    @ExperimentalAnimationApi
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +40,7 @@ class MainActivity : ComponentActivity() {
         checkPermissions()
     }
 
+    @ExperimentalAnimationApi
     @ExperimentalFoundationApi
     private fun checkPermissions() {
         if(hasPermissions(REQUIRED_PERMISSIONS)) {
@@ -50,32 +50,62 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalAnimationApi
     @ExperimentalFoundationApi
     private fun setViewContent() {
         setContent {
-            val navController = rememberNavController()
-            NavHost(
+
+            val navController = rememberAnimatedNavController()
+            var photoViewViewModel: PhotoViewViewModel = hiltViewModel()
+
+            AnimatedNavHost(
                 navController = navController,
                 startDestination = Screen.PhotoView.route
             ) {
 
-                composable(route = Screen.PhotoView.route) { navBackStackEntry ->
-                    val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
-                    val viewModel: PhotoViewViewModel = viewModel("PhotoViewViewModel", factory)
+                composable(
+                    route = Screen.PhotoView.route,
+                    enterTransition = {_,_ ->
+                        fadeIn(animationSpec = tween(1000))
+                    },
+                    exitTransition = {_,_ ->
+                        fadeOut(animationSpec = tween(1000))
+                    }
+                ) { navBackStackEntry ->
+                    photoViewViewModel = hiltViewModel<PhotoViewViewModel>()
                     PhotoView(
-                        viewModel = viewModel,
-                        photoUri = getLatestStoredPhoto(context),
+                        context = context,
+                        viewModel = photoViewViewModel,
                         onNavControllerNavigate = {
                             navController.navigate(it)
                         }
                     )
                 }
 
-                composable(route = Screen.CameraPreview.route) { navBackStackEntry ->
-                    val factory = HiltViewModelFactory(LocalContext.current, navBackStackEntry)
-                    val viewModel: CameraPreviewViewModel = viewModel("CameraPreviewViewModel", factory)
+                composable(
+                    route = Screen.CameraPreview.route,
+                    enterTransition = {_,_ ->
+                        slideInVertically(initialOffsetY = {200},
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + fadeIn(animationSpec = tween(1000))
+                    },
+                    exitTransition = {_,_ ->
+                        slideOutVertically(
+                            targetOffsetY = {200},
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + fadeOut(animationSpec = tween(1000))
+                    }
+                ) { navBackStackEntry ->
+                    val cameraPreviewViewModel = hiltViewModel<CameraPreviewViewModel>()
                     CameraPreview(
-                        viewModel = viewModel,
+                        cameraPreviewViewModel = cameraPreviewViewModel,
+                        photoViewViewModel = photoViewViewModel,
                         onNavControllerNavigate = {
                             navController.navigate(it)
                         }
@@ -91,6 +121,7 @@ class MainActivity : ComponentActivity() {
         ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    @ExperimentalAnimationApi
     @ExperimentalFoundationApi
     private val permissionRequest =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -100,13 +131,9 @@ class MainActivity : ComponentActivity() {
             if (granted) {
                 setViewContent()
             } else {
-                showToast("Permissions not granted.")
+                showToast("Permissions are needed for this app to function properly")
             }
         }
-
-    private fun getLatestStoredPhoto(context: Context): String = runBlocking {
-        return@runBlocking dataStore.getPhotoUriString(context)
-    }
 
     private fun showToast(message: String) {
         Toast.makeText(

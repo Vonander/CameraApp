@@ -20,7 +20,7 @@ class TakePhoto(
     fun execute(
         imageCapture: ImageCapture?,
         cameraPreviewCompletion: (DataState<String>) -> Unit,
-        saveUriToViewModelCompletion: (DataState<String>) -> Unit
+        saveUriToDataStoreCompletion: (DataState<String>) -> Unit
     ) {
 
         val imageCapture = imageCapture ?: return
@@ -45,11 +45,12 @@ class TakePhoto(
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
+                    val savedUri = Uri.fromFile(photoFile).toString()
 
                     showToast(message = "Photo capture succeeded")
-                    cameraPreviewCompletion(DataState.success(savedUri.toString()))
-                    saveUriToViewModelCompletion(DataState.success(savedUri.toString()))
+
+                    saveUriToDataStoreCompletion(DataState.success(savedUri))
+                    cameraPreviewCompletion(DataState.success(savedUri))
                 }
             }
         )

@@ -1,5 +1,6 @@
 package com.vonander.japancvcameraapp.presentation.ui
 
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.glide.rememberGlidePainter
 import com.vonander.japancvcameraapp.R
+import com.vonander.japancvcameraapp.datastore.PhotoDataStore
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.CustomBottomBar
 import com.vonander.japancvcameraapp.presentation.components.CustomButton
@@ -27,17 +29,22 @@ import com.vonander.japancvcameraapp.presentation.components.TagListHeader
 import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @ExperimentalFoundationApi
 @Composable
 fun PhotoView(
+    context: Context,
     viewModel: PhotoViewViewModel,
-    photoUri: String,
     onNavControllerNavigate: (String) -> Unit,
 ) {
+
     val tags = viewModel.tags.value
     val snackbarMessage = viewModel.snackbarMessage.value
     val scaffoldState = rememberScaffoldState()
+
+    viewModel.photoUri.value = getLatestStoredPhoto(context)
+    val photoUri = viewModel.photoUri.value
 
     JapanCVCameraAppTheme() {
 
@@ -68,7 +75,7 @@ fun PhotoView(
                     Image(
                         painter = rememberGlidePainter(
                             request =
-                            if (photoUri.isNullOrBlank()) {
+                            if (photoUri.isBlank()) {
                                 R.drawable.placeholder_image
                             } else {
                                 photoUri
@@ -112,7 +119,7 @@ fun PhotoView(
 
                     var takePhotoButtonText = "Take Photo"
 
-                    if(!photoUri.isNullOrBlank()) {
+                    if(!photoUri.isBlank()) {
 
                         CustomButton(
                             modifier = Modifier.padding(top = 40.dp),
@@ -183,4 +190,12 @@ fun PhotoView(
             }
         }
     }
+}
+
+private fun getLatestStoredPhoto(
+    context: Context
+): String = runBlocking {
+    val dataStore = PhotoDataStore(context)
+
+    return@runBlocking dataStore.getPhotoUriString()
 }

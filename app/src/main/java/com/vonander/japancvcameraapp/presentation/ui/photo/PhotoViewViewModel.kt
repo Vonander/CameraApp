@@ -21,10 +21,10 @@ class PhotoViewViewModel @Inject constructor(
     private val searchTags: SearchTags
 ) : ViewModel() {
 
-    var tags: MutableState<List<Tag>> = mutableStateOf(listOf())
-    val screenOrientation = mutableStateOf(1)
+    val tags: MutableState<List<Tag>> = mutableStateOf(listOf())
     val loading = mutableStateOf(false)
     val snackbarMessage = mutableStateOf("")
+    val photoUri = mutableStateOf("")
 
     fun onTriggerEvent(event: PhotoEvent) {
         try {

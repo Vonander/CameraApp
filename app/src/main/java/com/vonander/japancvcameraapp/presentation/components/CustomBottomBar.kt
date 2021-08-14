@@ -36,7 +36,6 @@ fun CustomBottomBar(
             },
             selected = false,
             onClick = {
-                println("okej click! home")
                 onNavControllerNavigate(Screen.PhotoView.route)
             }
         )
@@ -51,7 +50,6 @@ fun CustomBottomBar(
             },
             selected = false,
             onClick = {
-                println("okej click! camera")
                 onNavControllerNavigate(Screen.CameraPreview.route)
             }
         )
@@ -66,7 +64,6 @@ fun CustomBottomBar(
             },
             selected = false,
             onClick = {
-                println("okej click! info")
                 //onNavControllerNavigate(Screen.CameraPreview.route)
             }
         )

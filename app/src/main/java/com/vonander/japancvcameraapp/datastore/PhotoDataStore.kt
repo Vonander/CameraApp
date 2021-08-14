@@ -15,15 +15,17 @@ import javax.inject.Singleton
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "mainDataStore")
 
 @Singleton
-class PhotoDataStore {
+class PhotoDataStore(
+    private val context: Context
+) {
 
-    suspend fun setPhotoUriString(context: Context, newVaule: String) {
+    suspend fun setPhotoUriString(newVaule: String) {
         context.dataStore.edit {
             it[URI_STRING_KEY] = newVaule
         }
     }
 
-    suspend fun getPhotoUriString(context: Context): String {
+    suspend fun getPhotoUriString(): String {
         val valueFlow: Flow<String> = context.dataStore.data.map {
             it[URI_STRING_KEY]?: ""
         }

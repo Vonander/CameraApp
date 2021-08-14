@@ -79,6 +79,7 @@ dependencies {
     implementation ("com.google.dagger:hilt-android:${rootProject.extra["hilt_version"]}")
     implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation ("androidx.hilt:hilt-navigation:1.0.0")
+    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0-alpha03")
     kapt ("com.google.dagger:hilt-compiler:${rootProject.extra["hilt_version"]}")
     kapt ("androidx.hilt:hilt-compiler:1.0.0")
 
@@ -92,6 +93,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:${rootProject.extra["retrofit_version"]}")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
+
+    implementation ("com.google.accompanist:accompanist-navigation-animation:0.16.1")
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

@@ -2,7 +2,6 @@ package com.vonander.japancvcameraapp.presentation.ui.camera
 
 import android.util.Log
 import androidx.camera.core.ImageCapture
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.vonander.japancvcameraapp.BaseApplication
 import com.vonander.japancvcameraapp.datastore.PhotoDataStore
@@ -21,9 +20,6 @@ class CameraPreviewViewModel @Inject constructor(
     private val app: BaseApplication,
     private val takePhoto: TakePhoto,
 ): ViewModel() {
-
-    val screenOrientation = mutableStateOf(1)
-    val savedUri = mutableStateOf("")
 
     fun onTriggerEvent(event: PhotoEvent) {
         try {
@@ -47,11 +43,9 @@ class CameraPreviewViewModel @Inject constructor(
         takePhoto.execute(
             imageCapture = imageCapture,
             cameraPreviewCompletion = cameraPreviewCompletion,
-            saveUriToViewModelCompletion = { dataState ->
+            saveUriToDataStoreCompletion = { dataState ->
 
                 dataState.data?.let { uri ->
-                    savedUri.value = uri
-
                     savePhotoToDataStore(savedUri = uri)
                 }
             }
@@ -61,11 +55,10 @@ class CameraPreviewViewModel @Inject constructor(
     private fun savePhotoToDataStore(
         savedUri: String
     ) {
-        val dataStore = PhotoDataStore()
+        val dataStore = PhotoDataStore(app)
 
         CoroutineScope(Dispatchers.Main).launch {
             dataStore.setPhotoUriString(
-                context = app,
                 newVaule = savedUri
             )
         }
