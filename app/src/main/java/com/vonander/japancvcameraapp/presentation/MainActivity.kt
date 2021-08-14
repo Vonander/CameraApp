@@ -20,9 +20,9 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.navigation.Screen
-import com.vonander.japancvcameraapp.presentation.ui.PhotoView
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreview
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreviewViewModel
+import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoView
 import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
 import com.vonander.japancvcameraapp.util.REQUIRED_PERMISSIONS
 import dagger.hilt.android.AndroidEntryPoint

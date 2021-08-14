@@ -24,6 +24,8 @@ class PhotoViewViewModel @Inject constructor(
     val tags: MutableState<List<Tag>> = mutableStateOf(listOf())
     val loading = mutableStateOf(false)
     val snackbarMessage = mutableStateOf("")
+    val takePhotoButtonText = mutableStateOf("")
+    val searchTagsButtonText = mutableStateOf("")
     val photoId = mutableStateOf("")
     val photoUri = mutableStateOf("")
 
@@ -31,6 +33,7 @@ class PhotoViewViewModel @Inject constructor(
         try {
             when(event) {
                 is PhotoEvent.UploadPhoto -> {
+
                     uploadPhoto(
                         event.uriString,
                         event.completion
@@ -49,7 +52,6 @@ class PhotoViewViewModel @Inject constructor(
         uriString: String,
         completion: (Boolean) -> Unit
     ) {
-
         uploadPhoto.execute(
             uriString = uriString
         ).onEach { dataState ->
@@ -79,6 +81,8 @@ class PhotoViewViewModel @Inject constructor(
 
             dataState.data?.let { searchTagsResult ->
                 updateTagsList(searchTagsResult.result.getValue("tags"))
+
+                snackbarMessage.value = "New # tags updated!"
             }
 
             dataState.error?.let { message ->
@@ -107,8 +111,6 @@ class PhotoViewViewModel @Inject constructor(
 
             updatedList.add(tag)
         }
-
-        snackbarMessage.value = "New # tags updated!"
 
         tags.value = updatedList
     }

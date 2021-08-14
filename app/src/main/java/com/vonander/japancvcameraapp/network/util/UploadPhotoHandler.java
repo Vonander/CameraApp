@@ -39,6 +39,8 @@ public class UploadPhotoHandler implements Callable<String> {
         connection.setRequestProperty("Authorization", "Basic " + basicAuth);
         connection.setUseCaches(false);
         connection.setDoOutput(true);
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(10000);
 
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Connection", "Keep-Alive");

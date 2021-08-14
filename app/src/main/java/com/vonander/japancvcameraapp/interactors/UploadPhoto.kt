@@ -7,8 +7,10 @@ import com.vonander.japancvcameraapp.domain.model.UploadResult
 import com.vonander.japancvcameraapp.network.model.UploadResultDto
 import com.vonander.japancvcameraapp.network.util.UploadPhotoHandler
 import com.vonander.japancvcameraapp.network.util.UploadResultDtoMapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -44,7 +46,8 @@ class UploadPhoto(
         } catch (e: Exception) {
             emit(DataState.error<UploadResult>("Upload photo error $e"))
         }
-    }
+
+    }.flowOn(Dispatchers.IO)
 
     private fun getResultFromNetwork(
         uploadResultDto: UploadResultDto

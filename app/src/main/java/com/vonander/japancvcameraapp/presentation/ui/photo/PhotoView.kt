@@ -1,4 +1,4 @@
-package com.vonander.japancvcameraapp.presentation.ui
+package com.vonander.japancvcameraapp.presentation.ui.photo
 
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -23,7 +23,7 @@ import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.datastore.PhotoDataStore
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.*
-import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
+import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import kotlinx.coroutines.launch
 
@@ -37,6 +37,8 @@ fun PhotoView(
 
     val tags = viewModel.tags.value
     val snackbarMessage = viewModel.snackbarMessage.value
+    val takePhotoButtonText = viewModel.takePhotoButtonText.value
+    val searchtagsButtonText = viewModel.searchTagsButtonText.value
     val loading = viewModel.loading.value
     val scaffoldState = rememberScaffoldState()
 
@@ -88,7 +90,7 @@ fun PhotoView(
                             .scale(scaleX = -1f, scaleY = 1f)
                     )
 
-                    CircularIndeterminateProgressBar(isDisplayed = viewModel.loading.value)
+                    CircularIndeterminateProgressBar(isDisplayed = loading)
 
                     if (tags.isNotEmpty()) {
 
@@ -117,27 +119,23 @@ fun PhotoView(
                         }
                     }
 
-                    var takePhotoButtonText = "Take Photo"
+                    setButtonText(viewModel = viewModel)
 
                     if (!photoUri.isBlank()) {
 
                         CustomButton(
                             modifier = Modifier.padding(top = 40.dp),
-                            buttonText = "Search for tags #",
+                            buttonText = searchtagsButtonText,
                             enabled = !loading,
                             onClick = {
                                 viewModel.loading.value = true
-                            }
-                        )
 
-                        takePhotoButtonText = "Take a new Photo"
-                    }
-
-                    if (loading) {
-                        updateTagsList(
-                            viewModel = viewModel,
-                            completion = {
-                                println("updateTagsList complete")
+                                updateTagsList(
+                                    viewModel = viewModel,
+                                    completion = {
+                                        println("updateTagsList complete")
+                                    }
+                                )
                             }
                         )
                     }
@@ -153,12 +151,14 @@ fun PhotoView(
                 }
 
                 if (snackbarMessage.isNotBlank()) {
-
+                    
                     viewModel.viewModelScope.launch {
                         scaffoldState.snackbarHostState.showSnackbar (
                             message = snackbarMessage,
                             actionLabel = "Hide"
                         )
+
+                        viewModel.snackbarMessage.value = ""
                     }
 
                     DefaultSnackbar(
@@ -182,13 +182,11 @@ private fun updateTagsList(
     val photoUri = viewModel.photoUri.value
 
     viewModel.onTriggerEvent(
-
         event = PhotoEvent.UploadPhoto(
             uriString = photoUri,
             completion = { succeeded ->
 
                 if (succeeded) {
-
                     viewModel.onTriggerEvent(
                         event = PhotoEvent.SearchTags
                     )
@@ -198,6 +196,21 @@ private fun updateTagsList(
             }
         )
     )
+}
+
+private fun setButtonText(viewModel: PhotoViewViewModel) {
+    if (viewModel.loading.value) {
+        viewModel.searchTagsButtonText.value = "Loading..."
+        
+    } else {
+        viewModel.searchTagsButtonText.value = "Search for tags #"
+
+        if (viewModel.photoUri.value.isBlank()) {
+            viewModel.takePhotoButtonText.value = "Take Photo"
+        } else {
+            viewModel.takePhotoButtonText.value = "Take a new Photo"
+        }
+    }
 }
 
 private fun getLatestStoredPhoto(

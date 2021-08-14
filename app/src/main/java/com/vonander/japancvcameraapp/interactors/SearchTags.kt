@@ -6,15 +6,16 @@ import com.vonander.japancvcameraapp.domain.model.SearchTagsResult
 import com.vonander.japancvcameraapp.network.model.SearchTagsDto
 import com.vonander.japancvcameraapp.network.util.SearchTagsDtoMapper
 import com.vonander.japancvcameraapp.network.util.SearchTagsHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class SearchTags(
     private val dtoMapper: SearchTagsDtoMapper
 ) {
-
     fun execute(
         id: String?,
     ): Flow<DataState<SearchTagsResult>> = flow {
@@ -40,7 +41,7 @@ class SearchTags(
         } catch (e: Exception) {
             emit(DataState.error<SearchTagsResult>("Search tags error $e"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     private fun getResultFromNetwork(
         tagDto: SearchTagsDto
