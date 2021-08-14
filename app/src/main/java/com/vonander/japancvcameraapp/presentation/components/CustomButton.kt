@@ -10,12 +10,14 @@ import androidx.compose.ui.Modifier
 fun CustomButton(
     modifier: Modifier,
     buttonText: String,
+    enabled: Boolean,
     onClick: () -> Unit
 ) {
 
     Button(
         onClick = { onClick() },
         modifier = modifier,
+        enabled = enabled
     ) {
         Text(
             text = buttonText,

@@ -22,14 +22,10 @@ import com.google.accompanist.glide.rememberGlidePainter
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.datastore.PhotoDataStore
 import com.vonander.japancvcameraapp.navigation.Screen
-import com.vonander.japancvcameraapp.presentation.components.CustomBottomBar
-import com.vonander.japancvcameraapp.presentation.components.CustomButton
-import com.vonander.japancvcameraapp.presentation.components.DefaultSnackbar
-import com.vonander.japancvcameraapp.presentation.components.TagListHeader
+import com.vonander.japancvcameraapp.presentation.components.*
 import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @ExperimentalFoundationApi
 @Composable
@@ -41,9 +37,11 @@ fun PhotoView(
 
     val tags = viewModel.tags.value
     val snackbarMessage = viewModel.snackbarMessage.value
+    val loading = viewModel.loading.value
     val scaffoldState = rememberScaffoldState()
 
-    viewModel.photoUri.value = getLatestStoredPhoto(context)
+    getLatestStoredPhoto(context, viewModel)
+
     val photoUri = viewModel.photoUri.value
 
     JapanCVCameraAppTheme() {
@@ -90,6 +88,8 @@ fun PhotoView(
                             .scale(scaleX = -1f, scaleY = 1f)
                     )
 
+                    CircularIndeterminateProgressBar(isDisplayed = viewModel.loading.value)
+
                     if (tags.isNotEmpty()) {
 
                         TagListHeader(
@@ -119,49 +119,33 @@ fun PhotoView(
 
                     var takePhotoButtonText = "Take Photo"
 
-                    if(!photoUri.isBlank()) {
+                    if (!photoUri.isBlank()) {
 
                         CustomButton(
                             modifier = Modifier.padding(top = 40.dp),
                             buttonText = "Search for tags #",
+                            enabled = !loading,
                             onClick = {
-
-                                viewModel.snackbarMessage.value = "New # tags updated!"
-
-                                viewModel.onTriggerEvent(
-
-                                    event = PhotoEvent.UploadPhoto(
-                                        uriString = photoUri,
-                                        completion = { dataState ->
-
-                                            dataState.error?.let { message ->
-                                                viewModel.snackbarMessage.value = message
-                                            }
-
-                                            dataState.data?.let {
-                                                viewModel.onTriggerEvent(
-                                                    event = PhotoEvent.SearchTags(
-                                                        id = dataState.data.result.getValue("upload_id"),
-                                                        completion = { dataState ->
-                                                            viewModel.updateTagsList(
-                                                                dataState.data?.result?.getValue("tags")
-                                                            )
-                                                        }
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    )
-                                )
+                                viewModel.loading.value = true
                             }
                         )
 
                         takePhotoButtonText = "Take a new Photo"
                     }
 
+                    if (loading) {
+                        updateTagsList(
+                            viewModel = viewModel,
+                            completion = {
+                                println("updateTagsList complete")
+                            }
+                        )
+                    }
+
                     CustomButton(
-                        modifier = Modifier.padding(top = 40.dp),
                         buttonText = takePhotoButtonText,
+                        modifier = Modifier.padding(top = 40.dp),
+                        enabled = !loading,
                         onClick = {
                             onNavControllerNavigate(Screen.CameraPreview.route)
                         }
@@ -192,10 +176,37 @@ fun PhotoView(
     }
 }
 
-private fun getLatestStoredPhoto(
-    context: Context
-): String = runBlocking {
-    val dataStore = PhotoDataStore(context)
+private fun updateTagsList(
+    viewModel: PhotoViewViewModel,
+    completion: () -> Unit) {
+    val photoUri = viewModel.photoUri.value
 
-    return@runBlocking dataStore.getPhotoUriString()
+    viewModel.onTriggerEvent(
+
+        event = PhotoEvent.UploadPhoto(
+            uriString = photoUri,
+            completion = { succeeded ->
+
+                if (succeeded) {
+
+                    viewModel.onTriggerEvent(
+                        event = PhotoEvent.SearchTags
+                    )
+
+                    completion()
+                }
+            }
+        )
+    )
+}
+
+private fun getLatestStoredPhoto(
+    context: Context,
+    viewModel: PhotoViewViewModel
+) {
+
+    viewModel.viewModelScope.launch {
+        val dataStore = PhotoDataStore(context)
+        viewModel.photoUri.value = dataStore.getPhotoUriString()
+    }
 }

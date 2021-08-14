@@ -7,7 +7,8 @@ import com.vonander.japancvcameraapp.domain.model.UploadResult
 import com.vonander.japancvcameraapp.network.model.UploadResultDto
 import com.vonander.japancvcameraapp.network.util.UploadPhotoHandler
 import com.vonander.japancvcameraapp.network.util.UploadResultDtoMapper
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -17,13 +18,16 @@ class UploadPhoto(
 ) {
     fun execute(
         uriString: String,
-        completion: (DataState<UploadResult>) -> Unit
-    ) = runBlocking {
+    ): Flow<DataState<UploadResult>> = flow {
 
         try {
+
+            emit(DataState.loading())
+
             val uriPath = Uri.parse(uriString).path
             val newFile = File(uriPath)
             val handler = UploadPhotoHandler()
+
             handler.setFileToUpload(newFile)
 
             val executor: ExecutorService = Executors.newCachedThreadPool()
@@ -35,10 +39,10 @@ class UploadPhoto(
                 UploadResultDto::class.java
             )
 
-            completion(DataState.success(getResultFromNetwork(uploadResultDto)))
+            emit(DataState.success(getResultFromNetwork(uploadResultDto)))
 
         } catch (e: Exception) {
-            completion(DataState.error("Upload photo error $e"))
+            emit(DataState.error<UploadResult>("Upload photo error $e"))
         }
     }
 

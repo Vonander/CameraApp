@@ -6,7 +6,8 @@ import com.vonander.japancvcameraapp.domain.model.SearchTagsResult
 import com.vonander.japancvcameraapp.network.model.SearchTagsDto
 import com.vonander.japancvcameraapp.network.util.SearchTagsDtoMapper
 import com.vonander.japancvcameraapp.network.util.SearchTagsHandler
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -14,28 +15,31 @@ class SearchTags(
     private val dtoMapper: SearchTagsDtoMapper
 ) {
 
-    fun executeTest(
+    fun execute(
         id: String?,
-        completion: (DataState<SearchTagsResult>) -> Unit
-    ) = runBlocking {
+    ): Flow<DataState<SearchTagsResult>> = flow {
 
-        val id = id ?: return@runBlocking
+        try {
 
-        val handler = SearchTagsHandler()
-        handler.setImageUploadId(id)
+            emit(DataState.loading())
 
-        val executor: ExecutorService = Executors.newCachedThreadPool()
-        val future = executor.submit(handler)
-        val responseString = future.get()
+            val handler = SearchTagsHandler()
+            handler.setImageUploadId(id)
 
-        val tagDto: SearchTagsDto = Gson().fromJson(
-            responseString,
-            SearchTagsDto::class.java
-        )
+            val executor: ExecutorService = Executors.newCachedThreadPool()
+            val future = executor.submit(handler)
+            val responseString = future.get()
 
-        // TODO Check status
+            val tagDto: SearchTagsDto = Gson().fromJson(
+                responseString,
+                SearchTagsDto::class.java
+            )
 
-        completion(DataState.success(getResultFromNetwork(tagDto)))
+            emit(DataState.success(getResultFromNetwork(tagDto)))
+
+        } catch (e: Exception) {
+            emit(DataState.error<SearchTagsResult>("Search tags error $e"))
+        }
     }
 
     private fun getResultFromNetwork(
