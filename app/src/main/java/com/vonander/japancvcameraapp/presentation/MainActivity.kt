@@ -21,6 +21,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.AboutView
+import com.vonander.japancvcameraapp.presentation.components.SplashScreen
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreview
 import com.vonander.japancvcameraapp.presentation.ui.camera.CameraPreviewViewModel
 import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoView
@@ -61,18 +62,24 @@ class MainActivity : ComponentActivity() {
 
             AnimatedNavHost(
                 navController = navController,
-                startDestination = Screen.PhotoView.route
+                startDestination = Screen.SplashScreen.route
             ) {
 
                 composable(
+                    route = Screen.SplashScreen.route
+                ) {
+                    SplashScreen(
+                        onNavControllerNavigate = {
+                        navController.navigate(Screen.PhotoView.route)
+                    })
+                }
+
+                composable(
                     route = Screen.PhotoView.route,
-                    enterTransition = {_,_ ->
-                        fadeIn(animationSpec = tween(1000))
-                    },
                     exitTransition = {_,_ ->
                         fadeOut(animationSpec = tween(1000))
                     }
-                ) { navBackStackEntry ->
+                ) {
                     photoViewViewModel = hiltViewModel<PhotoViewViewModel>()
                     PhotoView(
                         viewModel = photoViewViewModel,
@@ -101,7 +108,7 @@ class MainActivity : ComponentActivity() {
                             )
                         ) + fadeOut(animationSpec = tween(1000))
                     }
-                ) { navBackStackEntry ->
+                ) {
                     val cameraPreviewViewModel = hiltViewModel<CameraPreviewViewModel>()
                     CameraPreview(
                         cameraPreviewViewModel = cameraPreviewViewModel,

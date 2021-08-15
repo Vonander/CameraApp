@@ -25,7 +25,7 @@ fun AboutView (
     val uriHandler = LocalUriHandler.current
     val url = "https://www.linkedin.com/in/johanfornander/"
 
-    JapanCVCameraAppTheme() {
+    JapanCVCameraAppTheme {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

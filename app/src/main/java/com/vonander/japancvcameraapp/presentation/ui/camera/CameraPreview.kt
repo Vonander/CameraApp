@@ -45,7 +45,7 @@ fun CameraPreview(
         .build()
     }
 
-    JapanCVCameraAppTheme() {
+    JapanCVCameraAppTheme {
 
         Box(
             modifier = Modifier.fillMaxSize()

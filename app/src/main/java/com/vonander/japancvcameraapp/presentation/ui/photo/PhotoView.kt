@@ -47,7 +47,7 @@ fun PhotoView(
 
     val photoUri = viewModel.photoUri.value
 
-    JapanCVCameraAppTheme() {
+    JapanCVCameraAppTheme {
 
         Scaffold(
             bottomBar = {
@@ -90,7 +90,13 @@ fun PhotoView(
                             .scale(scaleX = -1f, scaleY = 1f)
                     )
 
-                    CircularIndeterminateProgressBar(isDisplayed = loading)
+                    CircularIndeterminateProgressBar(
+                        isDisplayed = loading,
+                        color = MaterialTheme.colors.primary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    )
 
                     if (tags.isNotEmpty()) {
 

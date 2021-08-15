@@ -50,3 +50,7 @@ The specifications are intentionally vague to allow creative leeway on the UI/la
 ### Statement of Confidentiality
 
 The information contained in these documents is confidential, privileged, and only for the information of the intended recipient and may not be used, published, or redistributed without the prior written consent of Japan Computer Vision KK.
+
+### IDE info
+
+The latest code has been composed and tested on Android Studio Arctic Fox | 2020.03.01
