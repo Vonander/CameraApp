@@ -75,10 +75,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(
-                    route = Screen.PhotoView.route,
-                    exitTransition = {_,_ ->
-                        fadeOut(animationSpec = tween(1000))
-                    }
+                    route = Screen.PhotoView.route
                 ) {
                     photoViewViewModel = hiltViewModel<PhotoViewViewModel>()
                     PhotoView(
