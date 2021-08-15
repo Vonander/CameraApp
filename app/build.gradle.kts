@@ -89,7 +89,6 @@ dependencies {
     implementation ("androidx.datastore:datastore-core:${rootProject.extra["datastore_version"]}")
     implementation ("androidx.datastore:datastore-preferences:${rootProject.extra["datastore_version"]}")
 
-    implementation("com.squareup.retrofit2:retrofit:${rootProject.extra["retrofit_version"]}")
     implementation("com.squareup.retrofit2:converter-gson:${rootProject.extra["retrofit_version"]}")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")

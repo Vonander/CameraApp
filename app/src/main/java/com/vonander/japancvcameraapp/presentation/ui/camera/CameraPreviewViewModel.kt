@@ -3,6 +3,7 @@ package com.vonander.japancvcameraapp.presentation.ui.camera
 import android.util.Log
 import androidx.camera.core.ImageCapture
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.vonander.japancvcameraapp.BaseApplication
 import com.vonander.japancvcameraapp.datastore.PhotoDataStore
 import com.vonander.japancvcameraapp.domain.data.DataState
@@ -10,8 +11,6 @@ import com.vonander.japancvcameraapp.interactors.TakePhoto
 import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.util.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,9 +54,8 @@ class CameraPreviewViewModel @Inject constructor(
     private fun savePhotoToDataStore(
         savedUri: String
     ) {
-        val dataStore = PhotoDataStore(app)
-
-        CoroutineScope(Dispatchers.Main).launch {
+        viewModelScope.launch {
+            val dataStore = PhotoDataStore(app)
             dataStore.setPhotoUriString(
                 newVaule = savedUri
             )

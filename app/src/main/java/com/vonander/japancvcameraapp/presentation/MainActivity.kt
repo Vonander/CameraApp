@@ -75,7 +75,6 @@ class MainActivity : ComponentActivity() {
                 ) { navBackStackEntry ->
                     photoViewViewModel = hiltViewModel<PhotoViewViewModel>()
                     PhotoView(
-                        context = context,
                         viewModel = photoViewViewModel,
                         onNavControllerNavigate = {
                             navController.navigate(it)

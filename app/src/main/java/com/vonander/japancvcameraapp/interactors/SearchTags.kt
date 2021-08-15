@@ -1,11 +1,13 @@
 package com.vonander.japancvcameraapp.interactors
 
+import android.util.Log
 import com.google.gson.Gson
 import com.vonander.japancvcameraapp.domain.data.DataState
 import com.vonander.japancvcameraapp.domain.model.SearchTagsResult
 import com.vonander.japancvcameraapp.network.model.SearchTagsDto
 import com.vonander.japancvcameraapp.network.util.SearchTagsDtoMapper
 import com.vonander.japancvcameraapp.network.util.SearchTagsHandler
+import com.vonander.japancvcameraapp.util.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -39,6 +41,7 @@ class SearchTags(
             emit(DataState.success(getResultFromNetwork(tagDto)))
 
         } catch (e: Exception) {
+            Log.e(TAG, "Search tags error $e", e.cause)
             emit(DataState.error<SearchTagsResult>("Search tags error $e"))
         }
     }.flowOn(Dispatchers.IO)

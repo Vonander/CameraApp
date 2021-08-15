@@ -40,7 +40,7 @@ class TakePhoto(
             object : ImageCapture.OnImageSavedCallback {
 
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc.cause)
                     cameraPreviewCompletion(DataState.error("Photo capture failed: ${exc.message}"))
                 }
 

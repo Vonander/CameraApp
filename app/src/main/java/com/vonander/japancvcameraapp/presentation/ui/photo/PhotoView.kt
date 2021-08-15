@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -30,11 +31,11 @@ import kotlinx.coroutines.launch
 @ExperimentalFoundationApi
 @Composable
 fun PhotoView(
-    context: Context,
     viewModel: PhotoViewViewModel,
     onNavControllerNavigate: (String) -> Unit,
 ) {
 
+    val context = LocalContext.current
     val tags = viewModel.tags.value
     val snackbarMessage = viewModel.snackbarMessage.value
     val takePhotoButtonText = viewModel.takePhotoButtonText.value
@@ -54,7 +55,6 @@ fun PhotoView(
                     onNavControllerNavigate = onNavControllerNavigate
                 )
             },
-            //drawerContent = {},
             scaffoldState = scaffoldState,
             snackbarHost = {
                 scaffoldState.snackbarHostState

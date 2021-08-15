@@ -1,12 +1,14 @@
 package com.vonander.japancvcameraapp.interactors
 
 import android.net.Uri
+import android.util.Log
 import com.google.gson.Gson
 import com.vonander.japancvcameraapp.domain.data.DataState
 import com.vonander.japancvcameraapp.domain.model.UploadResult
 import com.vonander.japancvcameraapp.network.model.UploadResultDto
 import com.vonander.japancvcameraapp.network.util.UploadPhotoHandler
 import com.vonander.japancvcameraapp.network.util.UploadResultDtoMapper
+import com.vonander.japancvcameraapp.util.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -44,6 +46,7 @@ class UploadPhoto(
             emit(DataState.success(getResultFromNetwork(uploadResultDto)))
 
         } catch (e: Exception) {
+            Log.e(TAG, "Upload photo error $e", e.cause)
             emit(DataState.error<UploadResult>("Upload photo error $e"))
         }
 

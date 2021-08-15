@@ -1,11 +1,6 @@
 package com.vonander.japancvcameraapp.presentation.ui.camera
 
-import android.util.Log
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,17 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
+import com.vonander.japancvcameraapp.interactors.StartCamera
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.CameraPreviewToolbar
 import com.vonander.japancvcameraapp.presentation.components.DecoupledSnackbar
 import com.vonander.japancvcameraapp.presentation.ui.PhotoEvent
 import com.vonander.japancvcameraapp.presentation.ui.overlay.FaceDetectionOverlay
 import com.vonander.japancvcameraapp.presentation.ui.photo.PhotoViewViewModel
-import com.vonander.japancvcameraapp.presentation.utils.FaceAnalyzer
 import com.vonander.japancvcameraapp.ui.theme.JapanCVCameraAppTheme
-import com.vonander.japancvcameraapp.util.TAG
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @Composable
@@ -41,7 +38,6 @@ fun CameraPreview(
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val snackbarHostState = remember{ SnackbarHostState() }
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
     val imageCapture = remember {
         ImageCapture.Builder()
@@ -61,51 +57,24 @@ fun CameraPreview(
             AndroidView(
                 factory = { ctx ->
                     val previewView = PreviewView(ctx)
-                    val executor = ContextCompat.getMainExecutor(ctx)
 
-                    cameraProviderFuture.addListener({
-                        val cameraProvider = cameraProviderFuture.get()
-                        val preview = Preview.Builder().build().also {
-                            it.setSurfaceProvider(previewView.surfaceProvider)
-                        }
+                    val startCamera = StartCamera(
+                        context = context,
+                        previewView = previewView,
+                        lifecycleOwner = lifecycleOwner,
+                        imageCapture = imageCapture
+                    )
 
-                        val cameraLens =
-                            if (cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
-                                CameraSelector.LENS_FACING_FRONT
-                            } else {
-                                CameraSelector.LENS_FACING_BACK
-                            }
+                    startCamera.execute().onEach { dataState ->
 
-                        val cameraSelector = CameraSelector.Builder()
-                            .requireLensFacing(cameraLens)
-                            .build()
-
-                        val analysisUseCase = ImageAnalysis.Builder()
-                            .build()
-                            .also {
-                                it.setAnalyzer(
-                                    executor, FaceAnalyzer(
-                                        lifecycle = lifecycleOwner.lifecycle,
-                                        overlay = faceDetectionOverlay
-                                    )
-                                )
-                            }
-
-                        try {
-                            cameraProvider.unbindAll()
-
-                            cameraProvider.bindToLifecycle(
-                                lifecycleOwner,
-                                cameraSelector,
-                                preview,
-                                imageCapture,
-                                analysisUseCase
+                        dataState.error?.let { message ->
+                            showSnackbar(
+                                snackbarHostState = snackbarHostState,
+                                message = message,
                             )
-                        } catch (e: Exception) {
-                            Log.e(TAG, "CameraPreview Use case binding failed", e)
                         }
 
-                    }, executor)
+                    }.launchIn(cameraPreviewViewModel.viewModelScope)
 
                     previewView
                 },
@@ -135,7 +104,6 @@ fun CameraPreview(
 
                                 dataState.error?.let { message ->
                                     showSnackbar(
-                                        viewModel = cameraPreviewViewModel,
                                         snackbarHostState = snackbarHostState,
                                         message = message,
                                     )
@@ -155,11 +123,10 @@ fun CameraPreview(
 }
 
 private fun showSnackbar(
-    viewModel: CameraPreviewViewModel,
     snackbarHostState: SnackbarHostState,
     message: String
 ) {
-    viewModel.viewModelScope.launch {
+    CoroutineScope(Dispatchers.Main).launch {
         snackbarHostState.showSnackbar(
             message = message,
             actionLabel = "Hide",
