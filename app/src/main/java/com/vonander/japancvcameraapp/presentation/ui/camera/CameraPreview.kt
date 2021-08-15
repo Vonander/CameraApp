@@ -62,7 +62,8 @@ fun CameraPreview(
                         context = context,
                         previewView = previewView,
                         lifecycleOwner = lifecycleOwner,
-                        imageCapture = imageCapture
+                        imageCapture = imageCapture,
+                        faceDetectionOverlay = faceDetectionOverlay
                     )
 
                     startCamera.execute().onEach { dataState ->

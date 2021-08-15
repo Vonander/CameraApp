@@ -26,6 +26,7 @@ fun AboutView (
     val url = "https://www.linkedin.com/in/johanfornander/"
 
     JapanCVCameraAppTheme {
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,7 +60,7 @@ fun AboutView (
                         Icon(
                             Icons.Outlined.Link,
                             contentDescription = "link icon",
-                            tint = Color.White,
+                            tint = MaterialTheme.colors.primary,
                             modifier = Modifier.requiredSize(40.dp)
                         )
                     }

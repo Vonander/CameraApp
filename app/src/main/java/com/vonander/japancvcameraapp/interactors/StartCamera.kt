@@ -26,7 +26,8 @@ class StartCamera(
     private val context: Context,
     private val previewView: PreviewView,
     private val lifecycleOwner: LifecycleOwner,
-    private val imageCapture: ImageCapture
+    private val imageCapture: ImageCapture,
+    private val faceDetectionOverlay: FaceDetectionOverlay
 ) {
     fun execute(): Flow<DataState<Any>> = flow {
         try {
@@ -36,7 +37,6 @@ class StartCamera(
             val executor = ContextCompat.getMainExecutor(context)
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
             var cameraLensFacing = CameraState.Front.facing
-            val faceDetectionOverlay = FaceDetectionOverlay(context)
 
             cameraProviderFuture.addListener({
 
