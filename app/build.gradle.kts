@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
     buildToolsVersion = "30.0.3"
 
     defaultConfig {
@@ -79,7 +79,7 @@ dependencies {
     implementation ("com.google.dagger:hilt-android:${rootProject.extra["hilt_version"]}")
     implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation ("androidx.hilt:hilt-navigation:1.0.0")
-    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0-alpha03")
+    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
     kapt ("com.google.dagger:hilt-compiler:${rootProject.extra["hilt_version"]}")
     kapt ("androidx.hilt:hilt-compiler:1.0.0")
 

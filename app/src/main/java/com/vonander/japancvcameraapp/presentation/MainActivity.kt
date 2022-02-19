@@ -7,17 +7,14 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.vonander.japancvcameraapp.R
 import com.vonander.japancvcameraapp.navigation.Screen
 import com.vonander.japancvcameraapp.presentation.components.AboutView
@@ -34,16 +31,13 @@ import java.io.File
 class MainActivity : ComponentActivity() {
     private val context = this
 
-    @ExperimentalAnimationApi
-    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         checkPermissions()
     }
 
-    @ExperimentalAnimationApi
-    @ExperimentalFoundationApi
+    @OptIn(ExperimentalFoundationApi::class)
     private fun checkPermissions() {
         if(hasPermissions(REQUIRED_PERMISSIONS)) {
             setViewContent()
@@ -52,15 +46,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @ExperimentalAnimationApi
     @ExperimentalFoundationApi
     private fun setViewContent() {
         setContent {
 
-            val navController = rememberAnimatedNavController()
+            val navController = rememberNavController()
             var photoViewViewModel: PhotoViewViewModel = hiltViewModel()
 
-            AnimatedNavHost(
+            NavHost(
                 navController = navController,
                 startDestination = Screen.SplashScreen.route
             ) {
@@ -70,14 +63,15 @@ class MainActivity : ComponentActivity() {
                 ) {
                     SplashScreen(
                         onNavControllerNavigate = {
-                        navController.navigate(Screen.PhotoView.route)
+                            navController.popBackStack()
+                            navController.navigate(Screen.PhotoView.route)
                     })
                 }
 
                 composable(
                     route = Screen.PhotoView.route
                 ) {
-                    photoViewViewModel = hiltViewModel<PhotoViewViewModel>()
+                    photoViewViewModel = hiltViewModel()
                     PhotoView(
                         viewModel = photoViewViewModel,
                         onNavControllerNavigate = {
@@ -87,24 +81,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(
-                    route = Screen.CameraPreview.route,
-                    enterTransition = {_,_ ->
-                        slideInVertically(initialOffsetY = {200},
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + fadeIn(animationSpec = tween(1000))
-                    },
-                    exitTransition = {_,_ ->
-                        slideOutVertically(
-                            targetOffsetY = {200},
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + fadeOut(animationSpec = tween(1000))
-                    }
+                    route = Screen.CameraPreview.route
                 ) {
                     val cameraPreviewViewModel = hiltViewModel<CameraPreviewViewModel>()
                     CameraPreview(
@@ -117,13 +94,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(
-                    route = Screen.AboutView.route,
-                    enterTransition = {_,_ ->
-                        fadeIn(animationSpec = tween(1000))
-                    },
-                    exitTransition = {_,_ ->
-                       fadeOut(animationSpec = tween(1000))
-                    }
+                    route = Screen.AboutView.route
                 ) {
                     AboutView(
                         context = context
@@ -139,7 +110,6 @@ class MainActivity : ComponentActivity() {
         ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    @ExperimentalAnimationApi
     @ExperimentalFoundationApi
     private val permissionRequest =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -149,14 +119,14 @@ class MainActivity : ComponentActivity() {
             if (granted) {
                 setViewContent()
             } else {
-                showToast("Permissions are needed for this app to function properly")
+                showToast()
             }
         }
 
-    private fun showToast(message: String) {
+    private fun showToast() {
         Toast.makeText(
             this,
-            message,
+            "Permissions are needed for this app to function properly",
             Toast.LENGTH_LONG
         ).show()
     }
