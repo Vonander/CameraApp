@@ -28,6 +28,7 @@ fun SplashScreen(
 ) {
 
     var startAnimation by remember { mutableStateOf(false) }
+
     val alphaAnim = animateFloatAsState(
         targetValue = if (startAnimation) 1f else 0f,
         animationSpec = tween (
@@ -38,7 +39,6 @@ fun SplashScreen(
     LaunchedEffect(key1 = true) {
         startAnimation = true
         delay(2000)
-
         onNavControllerNavigate()
     }
 
@@ -53,13 +53,13 @@ fun SplashScreen(
 
             Image(
                 painter = rememberGlidePainter(
-                    request = R.drawable.paypaylogo,
+                    request = R.mipmap.jcv_icon,
                     previewPlaceholder = R.drawable.placeholder_image,
                 ),
                 contentDescription = "paypay logo",
                 contentScale = ContentScale.Inside,
                 modifier = Modifier
-                    .fillMaxSize(0.9f)
+                    .fillMaxSize()
                     .padding(bottom = 350.dp)
                     .alpha(alpha = alphaAnim.value)
             )

@@ -14,16 +14,15 @@
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/paypay_icon"
+        android:icon="@mipmap/jcv_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/paypay_icon_round"
+        android:roundIcon="@mipmap/jcv_icon_round"
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.JapanCVCameraApp">
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.JapanCVCameraApp.NoActionBar">
             <intent-filter>
